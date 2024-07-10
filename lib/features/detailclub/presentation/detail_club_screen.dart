@@ -170,12 +170,11 @@ class DetailClubScreen extends GetView<DetailClubController> {
       onTap: () async {
         var newUrl = "https://${url}";
         newUrl.toString();
-        try{
-          await launchURL(newUrl);
-        } catch(e){
+        try {
+          await _launchURL(newUrl);
+        } catch (e) {
           Logger().i(e.toString());
         }
-
       },
       child: Icon(icon, color: color, size: 36),
     );
@@ -206,13 +205,13 @@ class DetailClubScreen extends GetView<DetailClubController> {
       },
     );
   }
-}
 
-Future<void> launchURL(String url) async {
-  final Uri uri = Uri.parse(url);
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(uri);
-  } else {
-    throw 'Could not launch $url';
-  }  
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 }
