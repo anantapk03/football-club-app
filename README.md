@@ -10,13 +10,15 @@ Aplikasi berbasis mobile untuk menampilkan club sepak bola yang ada di Indonesia
 - [ ] Pencarian club : Pengguna dapat melakukan pencarian pada list club yang ada.
 
 ## Tampilan Aplikasi 
-
-![Screenshot1](assets/preview/splash-screen.jpeg)
-![Screenshot2](path/to/screenshot2.png)
-![Screenshot1](path/to/screenshot1.png)
-![Screenshot2](path/to/screenshot2.png)
+<div>
+   <img src="assets/preview/splash-screen.png" width="200">
+   <img src="assets/preview/home-screen.png" width="190">
+   <img src="assets/preview/detail-screen.png" width="240">
+   <img src="assets/preview/favorite-screen.png" width="210">
+</div>
 
 ## Instalasi
+
 ### Prasyarat
 
 Pastikan Anda memiliki perangkat dan perangkat lunak berikut:
