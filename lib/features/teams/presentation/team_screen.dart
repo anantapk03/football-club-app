@@ -7,15 +7,15 @@ import 'team_controller.dart';
 import 'team_state.dart';
 
 class TeamScreen extends GetView<TeamController> {
-  const TeamScreen({Key? key}) : super(key: key);
+  const TeamScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    controller.onInit;
     return Scaffold(
-      // appBar: _appBar(),
       body: Column(
         children: [
-          SizedBox(height: 30,),
+          const SizedBox(height: 30,),
           _searchBar(),
           Expanded(child: _body()),
         ],
@@ -23,22 +23,9 @@ class TeamScreen extends GetView<TeamController> {
     );
   }
 
-  PreferredSizeWidget _appBar() {
-    return AppBar(
-      title: const Text("List Team Soccer"),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.refresh),
-          onPressed: () => controller.onInit(),
-        ),
-      ],
-    );
-  }
-
   Widget _searchBar() {
     return Padding(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       child: TextField(
         onChanged: (query) => controller.searchTeams(query),
         decoration: InputDecoration(
@@ -46,7 +33,7 @@ class TeamScreen extends GetView<TeamController> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          prefixIcon: Icon(Icons.search),
+          prefixIcon: const Icon(Icons.search),
           filled: true,
           fillColor: Colors.white,
         ),
@@ -83,16 +70,16 @@ class TeamScreen extends GetView<TeamController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error, color: Colors.red, size: 64),
-          SizedBox(height: 16),
-          Text(
+          const Icon(Icons.error, color: Colors.red, size: 64),
+          const SizedBox(height: 16),
+          const Text(
             'Failed to load teams',
             style: TextStyle(fontSize: 18, color: Colors.red),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => controller.onInit(),
-            child: Text('Retry'),
+            child: const Text('Retry'),
           ),
         ],
       ),
@@ -106,7 +93,7 @@ class TeamScreen extends GetView<TeamController> {
       },
       child: GridView.builder(
         padding: const EdgeInsets.all(8.0),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 0.8,
           mainAxisSpacing: 8.0,
@@ -139,8 +126,8 @@ class TeamScreen extends GetView<TeamController> {
                 child: CachedNetworkImage(
                   imageUrl: team.badge!,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
             ),
@@ -149,7 +136,7 @@ class TeamScreen extends GetView<TeamController> {
               child: Text(
                 team.nameTeam!,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),

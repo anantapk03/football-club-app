@@ -5,7 +5,6 @@ import '../presentation/bottomnavigation_controller.dart';
 class BottomnavigationBinding extends Bindings{
   @override
   void dependencies() {
-    // TODO: implement dependencies
     Get.lazyPut(()=>BottomNavigationController());
   }
 }

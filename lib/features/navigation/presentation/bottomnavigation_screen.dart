@@ -1,22 +1,31 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import '../../../components/config/app_route.dart';
 import 'bottomnavigation_controller.dart';
 
-class BottomnavigationScreen extends GetView<BottomNavigationController>{
-
+class BottomnavigationScreen extends GetView<BottomNavigationController> {
   const BottomnavigationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:_body(),
-      bottomNavigationBar: _bottomNavigationBar(),
+    return WillPopScope(
+      onWillPop: () async {
+        if (controller.currentIndex.value != 0) {
+          controller.changePage(0);
+          return false; // Jangan keluar dari aplikasi
+        }
+        return true; // Keluar dari aplikasi jika sudah di halaman home
+      },
+      child: Scaffold(
+        body: _body(),
+        bottomNavigationBar: _bottomNavigationBar(),
+      ),
     );
   }
-  
-  _body(){
+
+  _body() {
     return Navigator(
       key: Get.nestedKey(1),
       onGenerateRoute: controller.onGenerateRoute,
@@ -24,7 +33,7 @@ class BottomnavigationScreen extends GetView<BottomNavigationController>{
     );
   }
 
-  _bottomNavigationBar(){
+  _bottomNavigationBar() {
     return Obx(
       () => BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -38,9 +47,7 @@ class BottomnavigationScreen extends GetView<BottomNavigationController>{
     );
   }
 
-  _bottomNavigationBarItem(Icon icon, String label){
-    return BottomNavigationBarItem(icon: icon , label: label);
+  _bottomNavigationBarItem(Icon icon, String label) {
+    return BottomNavigationBarItem(icon: icon, label: label);
   }
-
-  
 }

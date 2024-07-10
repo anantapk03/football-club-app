@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
 import 'components/config/app_style.dart';
@@ -23,7 +22,7 @@ Future _dependencyInjection() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

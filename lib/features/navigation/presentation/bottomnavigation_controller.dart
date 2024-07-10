@@ -9,10 +9,8 @@ import '../../teams/presentation/team_screen.dart';
 class BottomNavigationController extends GetxController {
 
   
-  static BottomNavigationController get to => Get.find();
-
+  // static BottomNavigationController get to => Get.find();
   var currentIndex = 0.obs;
-
   final pages = <String>[AppRoute.listTeam, AppRoute.favorite];
 
   void changePage(int index){

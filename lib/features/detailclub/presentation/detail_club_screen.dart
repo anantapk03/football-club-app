@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -5,11 +7,10 @@ import 'package:logger/logger.dart';
 import '../model/detail_club_model.dart';
 import 'detail_club_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'detail_club_state.dart';
 
 class DetailClubScreen extends GetView<DetailClubController> {
-  const DetailClubScreen({Key? key}) : super(key: key);
+  const DetailClubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +59,16 @@ class DetailClubScreen extends GetView<DetailClubController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error, color: Colors.red, size: 64),
-          SizedBox(height: 16),
-          Text(
+          const Icon(Icons.error, color: Colors.red, size: 64),
+          const SizedBox(height: 16),
+          const Text(
             'Failed to load club details',
             style: TextStyle(fontSize: 18, color: Colors.red),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => controller.loadDetailClub(Get.arguments),
-            child: Text('Retry'),
+            child: const Text('Retry'),
           ),
         ],
       ),
@@ -82,38 +83,42 @@ class DetailClubScreen extends GetView<DetailClubController> {
         children: [
           Text(
             detailClub.nameTeam!,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 24.0,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           CachedNetworkImage(
             imageUrl: detailClub.badge!,
             width: 200,
             height: 200,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'Founded: ${detailClub.formedYear}',
-            style: TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18),
           ),
-          SizedBox(height: 16),
+          Text(
+            'Stadium: ${detailClub.stadion!}',
+            style: const TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 16),
           Text(
             detailClub.description!,
             textAlign: TextAlign.justify,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _socialMediaLinks(detailClub),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           FutureBuilder<bool>(
             future: controller.favoriteHelper.isFavorite(detailClub.idTeam!),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               } else {
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
@@ -146,13 +151,13 @@ class DetailClubScreen extends GetView<DetailClubController> {
           Icons.facebook,
           Colors.blue,
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         _socialMediaIcon(
           detailClub.instagramUrl.toString(),
           Icons.camera_alt,
           Colors.pink,
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         _socialMediaIcon(
           detailClub.twitterUrl.toString(),
           Icons.alternate_email,
@@ -168,7 +173,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
     }
     return GestureDetector(
       onTap: () async {
-        var newUrl = "https://${url}";
+        var newUrl = "https://$url";
         newUrl.toString();
         try {
           await _launchURL(newUrl);
@@ -191,7 +196,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
             future: controller.favoriteHelper.isFavorite(idTeam),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               } else {
                 bool isFavorite = snapshot.data ?? false;
                 return Icon(

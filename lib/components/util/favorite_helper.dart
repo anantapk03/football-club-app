@@ -1,6 +1,7 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 import 'package:logger/logger.dart';
-
 import '../../features/detailclub/model/detail_club_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -17,7 +17,6 @@ class TeamController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     _loadAllTeam();
     super.onInit();
   }
@@ -55,6 +54,5 @@ class TeamController extends GetxController {
     update();
     
   }
-
 
 }

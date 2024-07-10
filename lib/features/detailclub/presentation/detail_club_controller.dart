@@ -49,8 +49,8 @@ class DetailClubController extends GetxController {
 
     if (isFavorite) {
       await _favoriteHelper.removeFavorite(idTeam);
-      Get.find<FavoriteController>().loadAllClubFavorite();
-      // await _favoriteHelper.getFavoriteTeams();
+      // Get.find<FavoriteController>().loadAllClubFavorite();
+
     } else {
       DetailClubModel? detailClub = (detailClubState is DetailClubLoadSuccess)
           ? (detailClubState as DetailClubLoadSuccess).detail
@@ -58,7 +58,7 @@ class DetailClubController extends GetxController {
 
       if (detailClub != null) {
         await _favoriteHelper.addFavorite(detailClub);
-        Get.find<FavoriteController>().loadAllClubFavorite();
+        // Get.find<FavoriteController>().loadAllClubFavorite();
         await _favoriteHelper.getFavoriteTeams();
       }
     }

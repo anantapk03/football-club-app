@@ -7,7 +7,7 @@ class DetailClubModel {
   String? facebookUrl;
   String? instagramUrl;
   String? twitterUrl;
-  String? staidion;
+  String? stadion;
 
   DetailClubModel({
     this.idTeam,
@@ -17,8 +17,8 @@ class DetailClubModel {
     this.description,
     this.facebookUrl,
     this.instagramUrl,
-    this.twitterUrl
-
+    this.twitterUrl,
+    this.stadion
   });
 
   DetailClubModel.fromJson(Map<String, dynamic> json){
@@ -30,7 +30,7 @@ class DetailClubModel {
     facebookUrl = json["strFacebook"];
     instagramUrl = json["strInstagram"];
     twitterUrl = json["strTwitter"];
-    staidion = json["strStadium"];
+    stadion = json["strStadium"];
   }
 
   Map<String, dynamic>toJson(){
@@ -43,7 +43,7 @@ class DetailClubModel {
     data['strFacebook']= facebookUrl;
     data['strInstagram']= instagramUrl;
     data['strTwitter']= twitterUrl;
-    data["strStadium"] = staidion;
+    data["strStadium"] = stadion;
     return data;
   }
 

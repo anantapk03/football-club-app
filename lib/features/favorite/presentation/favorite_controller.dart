@@ -15,7 +15,6 @@ class FavoriteController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     loadAllClubFavorite();
     super.onInit();
   }
