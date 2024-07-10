@@ -1,16 +1,40 @@
-# football_club_app
+# Football Club App 
 
-A new Flutter project.
+Aplikasi berbasis mobile untuk menampilkan club sepak bola yang ada di Indonesia. 
 
-## Getting Started
+## Fitur
 
-This project is a starting point for a Flutter application.
+- [ ] Menampilkan menu navigasi : Memberikan navigasi ke pengguna untuk mengatur ke halaman list club dan list favorite. 
+- [ ] Menampikan list club : Menampilkan list club sepak bola. 
+- [ ] Menampilkan list favorite club pengguna : Pengguna dapat memilih club favorite dan datanya akan disimpan.
+- [ ] Pencarian club : Pengguna dapat melakukan pencarian pada list club yang ada.
 
-A few resources to get you started if this is your first Flutter project:
+## Tampilan Aplikasi 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![Screenshot1](assets/preview/splash-screen.jpeg)
+![Screenshot2](path/to/screenshot2.png)
+![Screenshot1](path/to/screenshot1.png)
+![Screenshot2](path/to/screenshot2.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Instalasi
+### Prasyarat
+
+Pastikan Anda memiliki perangkat dan perangkat lunak berikut:
+- Flutter SDK: [Install Flutter](https://flutter.dev/docs/get-started/install)
+- Android Studio atau VS Code
+- Perangkat Android atau emulator
+
+### Langkah Instalasi
+
+1. Clone repositori ini
+   ```sh
+   git clone https://github.com/anantapk03/football-club-app
+   
+2. Instal dependencies
+   ```sh
+   flutter pub get
+   flutter pub run flutter_launcher_icons
+   
+3. Jalankan aplikasi di emulator atau perangkat
+   ```sh
+   flutter run
