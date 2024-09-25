@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+
 import '../../../components/util/helper.dart';
 import '../../../components/util/state.dart';
 import '../model/team_model.dart';
@@ -25,7 +26,7 @@ class TeamController extends GetxController {
     teamState = TeamLoading();
     update();
     _repository.loadTeams(
-      response: ResponseHandler(onSuccess: (listTeam) {
+        response: ResponseHandler(onSuccess: (listTeam) {
       teamState = TeamLoadSuccess(listTeam);
       allTeams = listTeam;
       searchResults.value = listTeam;
@@ -38,21 +39,16 @@ class TeamController extends GetxController {
     }));
   }
 
-  void searchTeams(String query){
+  void searchTeams(String query) {
     searchQuery.value = query;
-    if(query.isEmpty){
-      // teamState = TeamLoadSuccess(allTeams);
+    if (query.isEmpty) {
       searchResults.value = allTeams;
-    } else{
-      List<TeamModel> filteredTeams = allTeams.where((team){
+    } else {
+      List<TeamModel> filteredTeams = allTeams.where((team) {
         return team.nameTeam!.toLowerCase().contains(query.toLowerCase());
       }).toList();
       searchResults.value = filteredTeams;
-      // teamState = TeamLoadSuccess(filteredTeams);
     }
-
     update();
-    
   }
-
 }

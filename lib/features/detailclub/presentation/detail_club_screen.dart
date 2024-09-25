@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../model/detail_club_model.dart';
 import 'detail_club_controller.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'detail_club_state.dart';
 
 class DetailClubScreen extends GetView<DetailClubController> {
@@ -14,12 +15,12 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
   @override
   Widget build(BuildContext context) {
-    final String idTeam = Get.arguments;
-    controller.loadDetailClub(idTeam);
     return Scaffold(
       appBar: _appBar(),
       body: _body(),
-      floatingActionButton: _buildFavoriteButton(idTeam),
+      floatingActionButton: Obx(() {
+        return _buildFavoriteButton(controller.id.value);
+      }),
     );
   }
 

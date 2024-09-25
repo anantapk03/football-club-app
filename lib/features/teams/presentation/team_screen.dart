@@ -1,6 +1,8 @@
+// import 'package:cached_network_image/cached_network_imageg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../components/config/app_route.dart';
 import '../model/team_model.dart';
 import 'team_controller.dart';
@@ -11,11 +13,12 @@ class TeamScreen extends GetView<TeamController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.onInit;
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(height: 30,),
+          const SizedBox(
+            height: 30,
+          ),
           _searchBar(),
           Expanded(child: _body()),
         ],
@@ -110,6 +113,7 @@ class TeamScreen extends GetView<TeamController> {
   Widget _itemTeam(TeamModel team) {
     return GestureDetector(
       onTap: () {
+        print("id team ${team.idTeam}");
         Get.toNamed(AppRoute.detail, arguments: team.idTeam);
       },
       child: Card(
@@ -126,7 +130,8 @@ class TeamScreen extends GetView<TeamController> {
                 child: CachedNetworkImage(
                   imageUrl: team.badge!,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                  placeholder: (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),

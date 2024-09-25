@@ -14,60 +14,60 @@ import 'notification_services.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Inisialisasi Firebase untuk background handler
-  print("Handling a background message: ${message.notification?.title}");
+  print(
+      "Handling a background message: ${message.notification?.title} && ${message.data['id']}");
+}
+
+class AppNav {
+  final NotificationService notificationService = NotificationService();
+
+  void callToShowNotif(RemoteMessage message) {
+    notificationService.showNotification(
+      title: message.notification!.title,
+      body: message.notification!.body,
+      payload: message.data['id'],
+    );
+  }
+
+  void callListenerOnMessageForeground() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(
+          'Pesan diterima saat di foreground: ${message.notification?.title}');
+      if (message.notification != null) {
+        print('Notifikasi: ${message.notification?.title}');
+        callToShowNotif(message);
+      }
+    });
+  }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Inisialisasi NotificationService
-  final NotificationService notificationService = NotificationService();
-  await notificationService.initNotification();
-
-  // Inisialisasi Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Inisialisasi dependency injection
   await _dependencyInjection();
-
-  // Minta izin notifikasi
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     badge: true,
     sound: true,
   );
-
-  // Periksa apakah izin diberikan
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
     print('Izin notifikasi diberikan');
   } else {
     print('Izin notifikasi ditolak');
   }
-
-  // Dapatkan token FCM untuk perangkat ini dan cetak di log
   messaging.getToken().then((String? token) {
     if (token != null) {
       print('FCM Token: $token');
     }
   });
 
-  // Handler pesan saat aplikasi di foreground
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Pesan diterima saat di foreground: ${message.notification?.title}');
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     if (message.notification != null) {
-      print('Notifikasi: ${message.notification?.title}');
-
-      // Tampilkan notifikasi menggunakan flutter_local_notifications
-      notificationService.showNotification(
-        title: message.notification!.title,
-        body: message.notification!.body,
-      );
+      Get.toNamed(AppRoute.detail, arguments: message.data['id']);
     }
   });
-
-  // Register handler untuk background message
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   runApp(const MyApp());
 }
 
@@ -89,6 +89,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    AppNav().notificationService.initNotification();
+    AppNav().callListenerOnMessageForeground();
   }
 
   @override

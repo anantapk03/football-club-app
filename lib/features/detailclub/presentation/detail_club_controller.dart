@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
@@ -20,6 +21,16 @@ class DetailClubController extends GetxController {
   FavoriteHelper get favoriteHelper => _favoriteHelper;
 
   NotificationService notificationService = NotificationService();
+
+  final id = "".obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    id.value = Get.arguments.toString();
+    loadDetailClub(id.value);
+    firebaseController();
+  }
 
   void loadDetailClub(String idTeam) {
     detailClubState = DetailClubLoading();
@@ -60,21 +71,30 @@ class DetailClubController extends GetxController {
           title: "${detailClub?.nameTeam} Telah dihapus dari list favorite",
           body: "Periksa list favorite mu sekarang!",
           payload: detailClub?.idTeam);
-      // Get.find<FavoriteController>().loadAllClubFavorite();
     } else {
       if (detailClub != null) {
         await _favoriteHelper.addFavorite(detailClub);
-        // Get.find<FavoriteController>().loadAllClubFavorite();
         notificationService.showNotification(
             title:
                 "${detailClub?.nameTeam} Telah ditambahkan ke list favorite kamu!",
             body: "Periksa list favorite mu sekarang",
             payload: detailClub?.idTeam);
-        // await _favoriteHelper.getFavoriteTeams();
       }
     }
-    // Mengupdate controller dan favorite list di FavoriteController
     update();
     Get.find<FavoriteController>().loadAllClubFavorite();
+  }
+
+  void firebaseController() {
+    // Handle when onBackground
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print(
+          'Pesan diterima saat di foreground halaman detail: ${message.notification?.title}');
+      if (message.notification != null) {
+        print('Notifikasi: ${message.notification?.title}');
+        id.value = message.data['id'];
+        loadDetailClub(id.value);
+      }
+    });
   }
 }

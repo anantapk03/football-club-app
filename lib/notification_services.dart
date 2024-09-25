@@ -1,10 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 
-// Top-level function for handling background notifications
-void backgroundNotificationResponseHandler(
-    NotificationResponse notification) async {
-  print('Received background notification response: $notification');
-}
+import 'components/config/app_route.dart';
+import 'features/detailclub/presentation/detail_club_controller.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationPlugin =
@@ -32,11 +30,28 @@ class NotificationService {
       iOS: initializationSettingIOS,
     );
 
-    await notificationPlugin.initialize(
-      initializationSettings,
-      onDidReceiveBackgroundNotificationResponse:
-          backgroundNotificationResponseHandler,
-    );
+    await notificationPlugin.initialize(initializationSettings,
+        onDidReceiveBackgroundNotificationResponse:
+            backgroundNotificationResponseHandler,
+        onDidReceiveNotificationResponse:
+            backgroundNotificationResponseHandler);
+  }
+
+  void backgroundNotificationResponseHandler(
+      NotificationResponse notification) async {
+    print('Received background notification response: $notification');
+    var currentRoute = Get.currentRoute;
+    if (currentRoute == AppRoute.detail) {
+      print("Onclick when user is already on the detail page");
+      // Ambil controller dari halaman detail
+      // Get.offAndToNamed(AppRoute.detail, arguments: notification.payload);
+      DetailClubController controller = Get.find<DetailClubController>();
+      // // Panggil ulang fungsi untuk memuat data baru dari notifikasi
+      controller.loadDetailClub(notification.payload.toString());
+      print("Data updated with new notification payload");
+    } else {
+      Get.toNamed(AppRoute.detail, arguments: notification.payload);
+    }
   }
 
   Future<void> showNotification({
