@@ -1,8 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
+import 'components/base/models/notification_model.dart';
+import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
 import 'features/detailclub/presentation/detail_club_controller.dart';
+import 'features/favorite/presentation/favorite_controller.dart';
+import 'features/navigation/presentation/bottomnavigation_controller.dart';
+
+// Top Level
+void notificationHandlerAction(NotificationResponse notification) async {
+  try {
+    NotificationModel notificationPayload =
+        NotificationModel.fromJson(jsonDecode(notification.payload!));
+    NotificationService().actionNotification(notificationPayload);
+  } catch (e) {
+    print('Error parsing notification payload: $e');
+  }
+}
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationPlugin =
@@ -31,26 +48,64 @@ class NotificationService {
     );
 
     await notificationPlugin.initialize(initializationSettings,
-        onDidReceiveBackgroundNotificationResponse:
-            backgroundNotificationResponseHandler,
-        onDidReceiveNotificationResponse:
-            backgroundNotificationResponseHandler);
+        onDidReceiveBackgroundNotificationResponse: notificationHandlerAction,
+        onDidReceiveNotificationResponse: notificationHandlerAction);
   }
 
-  void backgroundNotificationResponseHandler(
-      NotificationResponse notification) async {
-    print('Received background notification response: $notification');
+  void actionNotification(NotificationModel notificationModel) {
+    switch (notificationModel.type) {
+      case AppConst.notificationToDetail:
+        actionToDetailTeam(notificationModel.id.toString());
+        break;
+      case AppConst.notificationToListFavorites:
+        actionToListFavorites();
+        break;
+      case AppConst.notificationFirebaseTopic:
+        actionFirebaseTopic(notificationModel.topic.toString());
+        break;
+      default:
+        print("Unhandled norification type: ${notificationModel.type}");
+    }
+  }
+
+  void actionToDetailTeam(String idPayload) {
     var currentRoute = Get.currentRoute;
     if (currentRoute == AppRoute.detail) {
-      print("Onclick when user is already on the detail page");
-      // Ambil controller dari halaman detail
-      // Get.offAndToNamed(AppRoute.detail, arguments: notification.payload);
       DetailClubController controller = Get.find<DetailClubController>();
       // // Panggil ulang fungsi untuk memuat data baru dari notifikasi
-      controller.loadDetailClub(notification.payload.toString());
+      controller.loadDetailClub(idPayload);
       print("Data updated with new notification payload");
     } else {
-      Get.toNamed(AppRoute.detail, arguments: notification.payload);
+      print("This excecute when user in another page");
+      Get.toNamed(AppRoute.detail, arguments: idPayload);
+    }
+  }
+
+  void actionFirebaseTopic(String idPayload) {
+    var currentRoute = Get.currentRoute;
+    if (currentRoute == AppRoute.detail) {
+      DetailClubController controller = Get.find<DetailClubController>();
+      // // Panggil ulang fungsi untuk memuat data baru dari notifikasi
+      controller.loadDetailClub(idPayload);
+      print("Data updated with new notification payload");
+    } else {
+      print("This excecute when user in another page");
+      Get.toNamed(AppRoute.detail, arguments: idPayload);
+    }
+  }
+
+  void actionToListFavorites() {
+    var currentRoute = Get.currentRoute;
+    if (currentRoute == AppRoute.home) {
+      BottomNavigationController bottomNavigationController =
+          Get.find<BottomNavigationController>();
+      bottomNavigationController.currentIndex.value = 1;
+      bottomNavigationController
+          .changePage(bottomNavigationController.currentIndex.value);
+      FavoriteController controller = Get.find<FavoriteController>();
+      controller.loadAllClubFavorite();
+    } else {
+      Get.offNamed(AppRoute.home, arguments: 1);
     }
   }
 

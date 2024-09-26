@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'components/base/models/notification_model.dart';
 import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
 import 'components/config/app_style.dart';
@@ -18,26 +21,48 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       "Handling a background message: ${message.notification?.title} && ${message.data['id']}");
 }
 
-class AppNav {
+class FirebaseObject {
   final NotificationService notificationService = NotificationService();
 
   void callToShowNotif(RemoteMessage message) {
     notificationService.showNotification(
       title: message.notification!.title,
       body: message.notification!.body,
-      payload: message.data['id'],
+      payload: message.data.toString(),
     );
   }
 
   void callListenerOnMessageForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-          'Pesan diterima saat di foreground: ${message.notification?.title}');
+      print("message data : ${message.data}");
+      // print("Messege receive on background : ${message.message}");
       if (message.notification != null) {
-        print('Notifikasi: ${message.notification?.title}');
         callToShowNotif(message);
       }
     });
+  }
+
+  void callListenerOnMessageBackground() {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        NotificationModel notificationModel =
+            NotificationModel.fromJson(jsonDecode(message.data.toString()));
+        notificationService.actionNotification(notificationModel);
+      }
+    });
+  }
+
+  void subscribeTopic(String? idTeam) async {
+    await FirebaseMessaging.instance
+        .subscribeToTopic(idTeam ?? "")
+        .then((onValue) => print("Subscribe topic for id : $idTeam"));
+  }
+
+  void unsubscribeTopic(String? idTeam) async {
+    await FirebaseMessaging.instance
+        .unsubscribeFromTopic(idTeam ?? "")
+        .then((onValue) => print("Unsubscribe Topic : $idTeam"));
   }
 }
 
@@ -62,12 +87,6 @@ Future<void> main() async {
     }
   });
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (message.notification != null) {
-      Get.toNamed(AppRoute.detail, arguments: message.data['id']);
-    }
-  });
   runApp(const MyApp());
 }
 
@@ -89,8 +108,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    AppNav().notificationService.initNotification();
-    AppNav().callListenerOnMessageForeground();
+    FirebaseObject().notificationService.initNotification();
+    FirebaseObject().callListenerOnMessageForeground();
+    FirebaseObject().callListenerOnMessageBackground();
   }
 
   @override

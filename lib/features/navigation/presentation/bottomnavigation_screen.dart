@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../components/config/app_route.dart';
+
 import 'bottomnavigation_controller.dart';
 
 class BottomnavigationScreen extends GetView<BottomNavigationController> {
@@ -29,7 +29,7 @@ class BottomnavigationScreen extends GetView<BottomNavigationController> {
     return Navigator(
       key: Get.nestedKey(1),
       onGenerateRoute: controller.onGenerateRoute,
-      initialRoute: AppRoute.listTeam,
+      initialRoute: controller.pages[controller.currentIndex.value],
     );
   }
 

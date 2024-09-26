@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import '../../../components/util/favorite_helper.dart';
 import '../../../components/util/helper.dart';
 import '../../../components/util/state.dart';
+import '../../../main.dart';
 import '../../../notification_services.dart';
 import '../../favorite/presentation/favorite_controller.dart';
 import '../model/detail_club_model.dart';
@@ -67,18 +68,11 @@ class DetailClubController extends GetxController {
 
     if (isFavorite) {
       await _favoriteHelper.removeFavorite(idTeam);
-      notificationService.showNotification(
-          title: "${detailClub?.nameTeam} Telah dihapus dari list favorite",
-          body: "Periksa list favorite mu sekarang!",
-          payload: detailClub?.idTeam);
+      FirebaseObject().unsubscribeTopic(idTeam);
     } else {
       if (detailClub != null) {
         await _favoriteHelper.addFavorite(detailClub);
-        notificationService.showNotification(
-            title:
-                "${detailClub?.nameTeam} Telah ditambahkan ke list favorite kamu!",
-            body: "Periksa list favorite mu sekarang",
-            payload: detailClub?.idTeam);
+        FirebaseObject().subscribeTopic(idTeam);
       }
     }
     update();
