@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'components/base/models/notification_model.dart';
 import 'components/config/app_const.dart';
@@ -66,8 +69,45 @@ class FirebaseObject {
   }
 }
 
+class DeepLinkController {
+  StreamSubscription? _sub;
+
+  void initialDeepLinking() {
+    _handleIncomingLinks();
+    handleInitialLink();
+  }
+
+  Future<void> handleInitialLink() async {
+    try {
+      final initialLink = await getInitialLink();
+      if (initialLink != null) {}
+    } catch (e) {
+      print("Gagal menangkap initial link : $e");
+    }
+  }
+
+  void _handleIncomingLinks() {
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        _processDeepLink(uri.toString());
+      }
+    }, onError: (err) {
+      print("Gagal menangkap incoming link: $err");
+    });
+  }
+
+  void _processDeepLink(String link) {
+    final uri = Uri.parse(link);
+    if (uri.pathSegments.contains('detail')) {
+      final id = uri.pathSegments.last;
+      Get.toNamed(AppRoute.detailDeepLink, parameters: {'id': id});
+    }
+  }
+}
+
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _dependencyInjection();
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -111,6 +151,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseObject().notificationService.initNotification();
     FirebaseObject().callListenerOnMessageForeground();
     FirebaseObject().callListenerOnMessageBackground();
+    DeepLinkController().initialDeepLinking();
   }
 
   @override
@@ -120,12 +161,15 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: AppStyle.appTheme,
       ),
-      initialRoute: AppRoute.defaultRoute,
+      initialRoute: AppRoute.home,
       unknownRoute: GetPage(
         name: AppRoute.notFound,
         page: () => const UnknownRoutePage(),
       ),
       getPages: AppRoute.pages,
+      routingCallback: (routing) {
+        if (routing?.current == "/detail") {}
+      },
     );
   }
 }

@@ -24,11 +24,19 @@ class DetailClubController extends GetxController {
   NotificationService notificationService = NotificationService();
 
   final id = "".obs;
+  final idFromParameters = "".obs;
+  final idFromArguments = "".obs;
 
   @override
   void onInit() {
     super.onInit();
-    id.value = Get.arguments.toString();
+    idFromArguments.value = Get.arguments ?? "";
+    idFromParameters.value = Get.parameters['id'] ?? "";
+    if (idFromParameters.value.isEmpty) {
+      id.value = idFromArguments.value;
+    } else {
+      id.value = idFromParameters.value;
+    }
     loadDetailClub(id.value);
     firebaseController();
   }

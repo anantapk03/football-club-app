@@ -28,6 +28,13 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.DIAL" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Host dan scheme URL untuk deeplinking -->
+                <data android:scheme="https" android:host="www.example.com" android:pathPrefix="/detail"/>
             </intent-filter>
         </activity>
 

@@ -1,3 +1,4 @@
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
@@ -18,8 +19,9 @@ class TeamController extends GetxController {
 
   @override
   void onInit() {
-    _loadAllTeam();
     super.onInit();
+    FlutterNativeSplash.remove();
+    _loadAllTeam();
   }
 
   void _loadAllTeam() {
