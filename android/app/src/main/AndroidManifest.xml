@@ -27,14 +27,24 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="android.intent.action.DIAL" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Host dan scheme URL untuk deeplinking -->
-                <data android:scheme="https" android:host="www.example.com" android:pathPrefix="/detail"/>
+                <data android:scheme="https" android:host="www.example.com" android:pathPrefix="/detail_deep_link"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Host dan scheme URL untuk deeplinking -->
+                <data android:scheme="https" android:host="www.footballclub.com" android:pathPrefix="/"/>
             </intent-filter>
         </activity>
 

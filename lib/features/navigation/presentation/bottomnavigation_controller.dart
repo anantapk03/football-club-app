@@ -13,11 +13,21 @@ class BottomNavigationController extends GetxController {
   final pages = <String>[AppRoute.listTeam, AppRoute.favorite];
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+    await _initHandleNotificationAndDeepLink();
+  }
+
+  Future<void> _initHandleNotificationAndDeepLink() async {
     var data = Get.arguments;
     if (data != null) {
-      currentIndex.value = int.parse(data);
+      data = int.parse(data);
+      if (data > 1) {
+        Future.delayed(const Duration(seconds: 3)).then((onValue) =>
+            Get.toNamed(AppRoute.detail, arguments: data.toString()));
+      } else {
+        currentIndex.value = data;
+      }
     } else {
       currentIndex.value = 0;
     }

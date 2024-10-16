@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 import '../../../components/util/favorite_helper.dart';
+import '../../../components/util/firebase_notification_util.dart';
 import '../../../components/util/helper.dart';
 import '../../../components/util/state.dart';
-import '../../../main.dart';
 import '../../../notification_services.dart';
 import '../../favorite/presentation/favorite_controller.dart';
 import '../model/detail_club_model.dart';
@@ -76,11 +76,11 @@ class DetailClubController extends GetxController {
 
     if (isFavorite) {
       await _favoriteHelper.removeFavorite(idTeam);
-      FirebaseObject().unsubscribeTopic(idTeam);
+      FirebaseNotificationUtil().unsubscribeTopic(idTeam);
     } else {
       if (detailClub != null) {
         await _favoriteHelper.addFavorite(detailClub);
-        FirebaseObject().subscribeTopic(idTeam);
+        FirebaseNotificationUtil().subscribeTopic(idTeam);
       }
     }
     update();

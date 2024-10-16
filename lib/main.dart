@@ -1,115 +1,30 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
-import 'package:uni_links/uni_links.dart';
 
-import 'components/base/models/notification_model.dart';
 import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
 import 'components/config/app_style.dart';
 import 'components/services/app_service.dart';
+import 'components/util/deep_link_util.dart';
+import 'components/util/firebase_notification_util.dart';
 import 'components/util/storage_util.dart';
 import 'firebase_options.dart';
-import 'notification_services.dart';
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Inisialisasi Firebase untuk background handler
-  print(
-      "Handling a background message: ${message.notification?.title} && ${message.data['id']}");
-}
-
-class FirebaseObject {
-  final NotificationService notificationService = NotificationService();
-
-  void callToShowNotif(RemoteMessage message) {
-    notificationService.showNotification(
-      title: message.notification!.title,
-      body: message.notification!.body,
-      payload: message.data.toString(),
-    );
-  }
-
-  void callListenerOnMessageForeground() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("message data : ${message.data}");
-      // print("Messege receive on background : ${message.message}");
-      if (message.notification != null) {
-        callToShowNotif(message);
-      }
-    });
-  }
-
-  void callListenerOnMessageBackground() {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        NotificationModel notificationModel =
-            NotificationModel.fromJson(jsonDecode(message.data.toString()));
-        notificationService.actionNotification(notificationModel);
-      }
-    });
-  }
-
-  void subscribeTopic(String? idTeam) async {
-    await FirebaseMessaging.instance
-        .subscribeToTopic(idTeam ?? "")
-        .then((onValue) => print("Subscribe topic for id : $idTeam"));
-  }
-
-  void unsubscribeTopic(String? idTeam) async {
-    await FirebaseMessaging.instance
-        .unsubscribeFromTopic(idTeam ?? "")
-        .then((onValue) => print("Unsubscribe Topic : $idTeam"));
-  }
-}
-
-class DeepLinkController {
-  StreamSubscription? _sub;
-
-  void initialDeepLinking() {
-    _handleIncomingLinks();
-    handleInitialLink();
-  }
-
-  Future<void> handleInitialLink() async {
-    try {
-      final initialLink = await getInitialLink();
-      if (initialLink != null) {}
-    } catch (e) {
-      print("Gagal menangkap initial link : $e");
-    }
-  }
-
-  void _handleIncomingLinks() {
-    _sub = uriLinkStream.listen((Uri? uri) {
-      if (uri != null) {
-        _processDeepLink(uri.toString());
-      }
-    }, onError: (err) {
-      print("Gagal menangkap incoming link: $err");
-    });
-  }
-
-  void _processDeepLink(String link) {
-    final uri = Uri.parse(link);
-    if (uri.pathSegments.contains('detail')) {
-      final id = uri.pathSegments.last;
-      Get.toNamed(AppRoute.detailDeepLink, parameters: {'id': id});
-    }
-  }
-}
 
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _dependencyInjection();
+  await _notificationConfiguration();
+  runApp(const MyApp());
+}
+
+Future<void> _notificationConfiguration() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
@@ -126,8 +41,6 @@ Future<void> main() async {
       print('FCM Token: $token');
     }
   });
-
-  runApp(const MyApp());
 }
 
 /// ====== Dependency Injection Section =====
@@ -148,10 +61,17 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FirebaseObject().notificationService.initNotification();
-    FirebaseObject().callListenerOnMessageForeground();
-    FirebaseObject().callListenerOnMessageBackground();
-    DeepLinkController().initialDeepLinking();
+    FirebaseNotificationUtil().notificationService.initNotification();
+    FirebaseNotificationUtil().callListenerOnMessageForeground();
+    FirebaseNotificationUtil().callListenerOnMessageBackground();
+    DeepLinkUtil().initialDeepLinking();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    DeepLinkUtil().dispose();
   }
 
   @override
@@ -161,15 +81,12 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: AppStyle.appTheme,
       ),
-      initialRoute: AppRoute.home,
+      initialRoute: AppRoute.defaultRoute,
       unknownRoute: GetPage(
         name: AppRoute.notFound,
         page: () => const UnknownRoutePage(),
       ),
       getPages: AppRoute.pages,
-      routingCallback: (routing) {
-        if (routing?.current == "/detail") {}
-      },
     );
   }
 }

@@ -27,7 +27,7 @@ class NotificationService {
 
   Future<void> initNotification() async {
     const AndroidInitializationSettings initializationAndroidSettings =
-        AndroidInitializationSettings("@mipmap/launcher_icon");
+        AndroidInitializationSettings("launcher_icon");
 
     final DarwinInitializationSettings initializationSettingIOS =
         DarwinInitializationSettings(
@@ -72,11 +72,8 @@ class NotificationService {
     var currentRoute = Get.currentRoute;
     if (currentRoute == AppRoute.detail) {
       DetailClubController controller = Get.find<DetailClubController>();
-      // // Panggil ulang fungsi untuk memuat data baru dari notifikasi
       controller.loadDetailClub(idPayload);
-      print("Data updated with new notification payload");
     } else {
-      print("This excecute when user in another page");
       Get.toNamed(AppRoute.detail, arguments: idPayload);
     }
   }
@@ -85,11 +82,8 @@ class NotificationService {
     var currentRoute = Get.currentRoute;
     if (currentRoute == AppRoute.detail) {
       DetailClubController controller = Get.find<DetailClubController>();
-      // // Panggil ulang fungsi untuk memuat data baru dari notifikasi
       controller.loadDetailClub(idPayload);
-      print("Data updated with new notification payload");
     } else {
-      print("This excecute when user in another page");
       Get.toNamed(AppRoute.detail, arguments: idPayload);
     }
   }
@@ -97,16 +91,22 @@ class NotificationService {
   void actionToListFavorites() {
     var currentRoute = Get.currentRoute;
     if (currentRoute == AppRoute.home) {
-      BottomNavigationController bottomNavigationController =
-          Get.find<BottomNavigationController>();
-      bottomNavigationController.currentIndex.value = 1;
-      bottomNavigationController
-          .changePage(bottomNavigationController.currentIndex.value);
-      FavoriteController controller = Get.find<FavoriteController>();
-      controller.loadAllClubFavorite();
-    } else {
-      Get.offNamed(AppRoute.home, arguments: 1);
+      _updateBottomNavigationController();
     }
+    if (Get.currentRoute == AppRoute.detail) {
+      Get.back();
+      _updateBottomNavigationController();
+    }
+  }
+
+  void _updateBottomNavigationController() {
+    BottomNavigationController bottomNavigationController =
+        Get.find<BottomNavigationController>();
+    bottomNavigationController.currentIndex.value = 1;
+    bottomNavigationController
+        .changePage(bottomNavigationController.currentIndex.value);
+    FavoriteController controller = Get.find<FavoriteController>();
+    controller.loadAllClubFavorite();
   }
 
   Future<void> showNotification({

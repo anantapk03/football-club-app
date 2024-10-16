@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+
 import 'splash_controller.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,8 +16,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    _controller.onInit();
     super.initState();
+    _controller.onInit();
   }
 
   @override
@@ -32,9 +33,9 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Color(0xff593265),
       body: Center(
         child: Image.asset(
-          'assets/images/logo_app2.png',
-          width: 200,
-          height: 200,
+          'assets/images/logo_app.png',
+          width: 300,
+          height: 300,
         ),
       ),
     );
