@@ -32,6 +32,7 @@ dependencies:
   url_launcher: ^6.3.0
   uuid: ^4.4.0
   flutter_native_splash: ^2.4.1
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

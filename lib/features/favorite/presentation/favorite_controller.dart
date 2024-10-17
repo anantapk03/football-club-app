@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+
 import '../../../components/util/helper.dart';
 import '../../detailclub/model/detail_club_model.dart';
 import '../repository/favorite_repository.dart';
@@ -22,10 +23,12 @@ class FavoriteController extends GetxController {
   void loadAllClubFavorite() async {
     favoriteState.value = FavoriteLoading();
     update();
-    try{
+    try {
       List<DetailClubModel> favorites = await _repository.getFavoriteTeams();
-      favoriteState.value = FavoriteLoadSuccess(favorites);
-    } catch(e){
+      await Future.delayed(const Duration(seconds: 1)).then(
+          (onValue) => favoriteState.value = FavoriteLoadSuccess(favorites));
+      // favoriteState.value = FavoriteLoadSuccess(favorites);
+    } catch (e) {
       _logger.e(e);
       AlertModel.showBasic("Error", e.toString());
       favoriteState.value = FavoriteError();

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../components/config/app_route.dart';
+import '../../../components/widget/app_shimmer.dart';
+import '../../../components/widget/shimmer/list_club_shimmer.dart';
 import '../model/team_model.dart';
 import 'team_controller.dart';
 import 'team_state.dart';
@@ -66,7 +68,7 @@ class TeamScreen extends GetView<TeamController> {
     );
   }
 
-  Widget _loading() => const Center(child: CircularProgressIndicator());
+  Widget _loading() => const ListClubShimmer();
 
   Widget _error() {
     return Center(
@@ -131,25 +133,43 @@ class TeamScreen extends GetView<TeamController> {
                   imageUrl: team.badge!,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
+                      Center(child: _buildShimmerImage()),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                team.nameTeam!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                ),
-              ),
+              child: team.nameTeam == null
+                  ? _buildShimmerText()
+                  : Text(
+                      team.nameTeam!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  // Shimmer image placeholder
+  Widget _buildShimmerImage() {
+    return AppShimmer(
+        child: Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.white,
+    ));
+  }
+
+  // Shimmer text placeholder
+  Widget _buildShimmerText() {
+    return AppShimmer(
+        child: Container(width: 100, height: 16, color: Colors.white));
   }
 }

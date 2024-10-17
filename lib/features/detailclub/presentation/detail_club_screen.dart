@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../components/widget/shimmer/detail_shimmer.dart';
 import '../model/detail_club_model.dart';
 import 'detail_club_controller.dart';
 import 'detail_club_state.dart';
@@ -53,7 +54,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
-  Widget _loading() => const Center(child: CircularProgressIndicator());
+  Widget _loading() => const DetailShimmer();
 
   Widget _error() {
     return Center(
