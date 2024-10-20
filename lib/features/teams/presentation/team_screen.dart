@@ -16,14 +16,35 @@ class TeamScreen extends GetView<TeamController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 30,
-          ),
-          _searchBar(),
-          Expanded(child: _body()),
-        ],
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Search Bar Section
+            SliverToBoxAdapter(
+              child: _searchBar(),
+            ),
+            // Body Content Section
+            GetBuilder<TeamController>(
+              builder: (ctrl) {
+                final state = controller.teamState;
+
+                if (state is TeamLoading) {
+                  return SliverToBoxAdapter(child: _loading());
+                }
+
+                if (state is TeamLoadSuccess) {
+                  return _contentBody(controller.searchResults);
+                }
+
+                if (state is TeamError) {
+                  return SliverToBoxAdapter(child: _error());
+                }
+
+                return SliverToBoxAdapter(child: Container());
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -36,35 +57,33 @@ class TeamScreen extends GetView<TeamController> {
         decoration: InputDecoration(
           hintText: "Search team by name",
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(30.0),
           ),
           prefixIcon: const Icon(Icons.search),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Colors.transparent,
         ),
       ),
     );
   }
 
-  Widget _body() {
-    return GetBuilder<TeamController>(
-      builder: (ctrl) {
-        final state = controller.teamState;
-
-        if (state is TeamLoading) {
-          return _loading();
-        }
-
-        if (state is TeamLoadSuccess) {
-          return _contentBody(controller.searchResults);
-        }
-
-        if (state is TeamError) {
-          return _error();
-        }
-
-        return Container();
-      },
+  Widget _contentBody(List<TeamModel> listData) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(8.0),
+      sliver: SliverGrid(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            return _itemTeam(listData[index]);
+          },
+          childCount: listData.length,
+        ),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.8,
+          mainAxisSpacing: 8.0,
+          crossAxisSpacing: 8.0,
+        ),
+      ),
     );
   }
 
@@ -87,27 +106,6 @@ class TeamScreen extends GetView<TeamController> {
             child: const Text('Retry'),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _contentBody(List<TeamModel> listData) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        controller.onInit();
-      },
-      child: GridView.builder(
-        padding: const EdgeInsets.all(8.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.8,
-          mainAxisSpacing: 8.0,
-          crossAxisSpacing: 8.0,
-        ),
-        itemCount: listData.length,
-        itemBuilder: (context, index) {
-          return _itemTeam(listData[index]);
-        },
       ),
     );
   }
@@ -157,7 +155,6 @@ class TeamScreen extends GetView<TeamController> {
     );
   }
 
-  // Shimmer image placeholder
   Widget _buildShimmerImage() {
     return AppShimmer(
         child: Container(
@@ -167,7 +164,6 @@ class TeamScreen extends GetView<TeamController> {
     ));
   }
 
-  // Shimmer text placeholder
   Widget _buildShimmerText() {
     return AppShimmer(
         child: Container(width: 100, height: 16, color: Colors.white));

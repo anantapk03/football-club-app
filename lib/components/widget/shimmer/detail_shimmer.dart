@@ -14,16 +14,16 @@ class DetailShimmer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: 30.0,
-            width: 200.0,
+            width: 200,
+            height: 200,
             color: Colors.white,
           ),
           const SizedBox(
             height: 16,
           ),
           Container(
-            width: 200,
-            height: 200,
+            height: 30.0,
+            width: 200.0,
             color: Colors.white,
           ),
           const SizedBox(

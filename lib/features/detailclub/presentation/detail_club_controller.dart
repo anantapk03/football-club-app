@@ -9,15 +9,20 @@ import '../../../components/util/state.dart';
 import '../../../notification_services.dart';
 import '../../favorite/presentation/favorite_controller.dart';
 import '../model/detail_club_model.dart';
+import '../model/history_event_club_model.dart';
 import '../repository/detailclub_repository.dart';
 import 'detail_club_state.dart';
+import 'history_event_club_state.dart';
 
 class DetailClubController extends GetxController {
   final DetailclubRepository _repository;
   DetailClubState detailClubState = DetailClubIdle();
+  HistoryEventClubState historyEventClubState = HistoryEventClubIdle();
   final FavoriteHelper _favoriteHelper;
   final _logger = Logger();
+  final isFullDetailDescription = false.obs;
   DetailClubController(this._repository, this._favoriteHelper);
+  List<HistoryEventClubModel>? listHistoryClub = [];
 
   FavoriteHelper get favoriteHelper => _favoriteHelper;
 
@@ -28,7 +33,7 @@ class DetailClubController extends GetxController {
   final idFromArguments = "".obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     idFromArguments.value = Get.arguments ?? "";
     idFromParameters.value = Get.parameters['id'] ?? "";
@@ -38,6 +43,7 @@ class DetailClubController extends GetxController {
       id.value = idFromParameters.value;
     }
     loadDetailClub(id.value);
+    await loadListHistoryEventClub();
     firebaseController();
   }
 
@@ -66,6 +72,25 @@ class DetailClubController extends GetxController {
     }, onDone: () {
       update();
     }));
+  }
+
+  Future<void> loadListHistoryEventClub() async {
+    historyEventClubState = HistoryEventClubLoading();
+    update();
+
+    _repository.loadHistoryEventClub(
+        response: ResponseHandler(onSuccess: (listHistoryEventClub) {
+          historyEventClubState =
+              HistoryEventClubLoadSuccess(listHistoryEventClub);
+          listHistoryClub = listHistoryEventClub;
+        }, onFailed: (e, message) {
+          _logger.e(e);
+          AlertModel.showBasic("Error", message);
+          historyEventClubState = HistoryEventClubError();
+        }, onDone: () {
+          update();
+        }),
+        idTeam: id.value);
   }
 
   Future<void> toggleFavorite(String idTeam) async {

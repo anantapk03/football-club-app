@@ -18,33 +18,32 @@ class DetailClubModel {
     this.facebookUrl,
     this.instagramUrl,
     this.twitterUrl,
-    this.stadion
+    this.stadion,
   });
 
-  DetailClubModel.fromJson(Map<String, dynamic> json){
+  DetailClubModel.fromJson(Map<String, dynamic> json) {
     idTeam = json["idTeam"];
     nameTeam = json["strTeam"];
     badge = json["strBadge"];
     formedYear = json["intFormedYear"];
-    description =json["strDescriptionEN"];
+    description = json["strDescriptionEN"];
     facebookUrl = json["strFacebook"];
     instagramUrl = json["strInstagram"];
     twitterUrl = json["strTwitter"];
     stadion = json["strStadium"];
   }
 
-  Map<String, dynamic>toJson(){
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['idTeam']=idTeam;
-    data['strTeam']=nameTeam;
-    data['strBadge']=badge;
-    data['intFormedYear']=formedYear;
-    data['strDescriptionEN']=description;
-    data['strFacebook']= facebookUrl;
-    data['strInstagram']= instagramUrl;
-    data['strTwitter']= twitterUrl;
+    data['idTeam'] = idTeam;
+    data['strTeam'] = nameTeam;
+    data['strBadge'] = badge;
+    data['intFormedYear'] = formedYear;
+    data['strDescriptionEN'] = description;
+    data['strFacebook'] = facebookUrl;
+    data['strInstagram'] = instagramUrl;
+    data['strTwitter'] = twitterUrl;
     data["strStadium"] = stadion;
     return data;
   }
-
 }
