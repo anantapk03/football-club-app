@@ -199,16 +199,12 @@ class DetailClubScreen extends GetView<DetailClubController> {
                   borderRadius: BorderRadius.all(Radius.circular(30)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(
-                          0.5), // Warna bayangan dengan transparansi
-                      spreadRadius:
-                          2, // Menentukan seberapa jauh bayangan menyebar
-                      blurRadius: 8, // Seberapa kabur bayangan
-                      offset: Offset(0,
-                          4), // Posisi bayangan (x,y). Offset(0,4) artinya bayangan akan berada di bawah
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
                     ),
                   ]),
-              // width: 300,
               child: _historyEventList(listHistoryEvent),
             ),
             const SizedBox(height: 100),
@@ -345,8 +341,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
   }
 
   Widget _historyEventItem(HistoryEventClubModel? data, BuildContext context) {
-    var date = _convertDate(data?.dateEvent ?? "05-09-2003");
-    print("date item : $date");
+    var date = _convertDate(data?.dateEvent ?? "2003-09-05");
     return Container(
       width: MediaQuery.sizeOf(context).width - 40,
       padding: EdgeInsets.all(16.0),
@@ -359,8 +354,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 8,
-              offset: Offset(0,
-                  4), // Posisi bayangan (x,y). Offset(0,4) artinya bayangan akan berada di bawah
+              offset: Offset(0, 4),
             ),
           ]),
       child: Column(
@@ -472,15 +466,21 @@ class DetailClubScreen extends GetView<DetailClubController> {
   }
 
   Widget _historyEventList(List<HistoryEventClubModel> listData) {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: listData.length,
-        itemBuilder: (context, index) {
-          final historyEvent = listData[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: _historyEventItem(historyEvent, context),
-          );
-        });
+    if (listData.isNotEmpty) {
+      return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: listData.length,
+          itemBuilder: (context, index) {
+            final historyEvent = listData[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: _historyEventItem(historyEvent, context),
+            );
+          });
+    } else {
+      return Center(
+        child: Text("Empty History Event"),
+      );
+    }
   }
 }

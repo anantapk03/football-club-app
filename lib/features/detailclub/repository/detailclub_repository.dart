@@ -37,13 +37,19 @@ class DetailclubRepository extends BaseRepository {
     try {
       final String apiResponse =
           await _datasource.getHistoryEventById(idTeam ?? "139350");
-      final List<dynamic> jsonListHistory = json.decode(apiResponse)['results'];
-      List<HistoryEventClubModel> items = jsonListHistory
-          .map((json) => HistoryEventClubModel.fromJson(json))
-          .toList();
+      final List<dynamic>? jsonListHistory =
+          json.decode(apiResponse)['results'];
 
-      response.onSuccess.call(items);
-      response.onDone.call();
+      if (jsonListHistory != null) {
+        List<HistoryEventClubModel> items = jsonListHistory
+            .map((json) => HistoryEventClubModel.fromJson(json))
+            .toList();
+        response.onSuccess.call(items);
+        response.onDone.call();
+      } else {
+        response.onSuccess.call([]);
+        response.onDone.call();
+      }
     } catch (e) {
       _logger.e(e);
       response.onFailed(e, e.toString());
