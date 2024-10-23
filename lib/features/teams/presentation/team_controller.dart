@@ -1,26 +1,29 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
-import '../../../components/config/app_route.dart';
 import '../../../components/util/helper.dart';
 import '../../../components/util/state.dart';
 import '../model/team_model.dart';
 import '../repository/team_repository.dart';
+import 'list_league_state.dart';
 import 'team_state.dart';
 
 class TeamController extends GetxController {
   final TeamRepository _repository;
   TeamState teamState = TeamIdle();
+  ListLeagueState listLeagueState = ListLeagueIdle();
   final _logger = Logger();
   var searchQuery = "".obs;
   List<TeamModel> allTeams = [];
   var searchResults = <TeamModel>[].obs;
   TeamController(this._repository);
+  final isShowMore = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadAllTeam();
+    _loadAllLeagues();
   }
 
   void _loadAllTeam() {
@@ -35,6 +38,21 @@ class TeamController extends GetxController {
       _logger.e(e);
       AlertModel.showBasic("Error", message);
       teamState = TeamError();
+    }, onDone: () {
+      update();
+    }));
+  }
+
+  void _loadAllLeagues() {
+    listLeagueState = ListLeagueLoading();
+    update();
+    _repository.loadListLeagues(
+        response: ResponseHandler(onSuccess: (listLeague) {
+      listLeagueState = LisLeagueLoadSuccess(listLeague);
+    }, onFailed: (e, message) {
+      _logger.e(e);
+      AlertModel.showBasic("Error", message);
+      listLeagueState = ListLeagueError();
     }, onDone: () {
       update();
     }));

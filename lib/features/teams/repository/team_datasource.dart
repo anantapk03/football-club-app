@@ -9,8 +9,17 @@ class TeamDatasource extends BaseDioDataSource {
     String path = 'search_all_teams.php';
     Map<String, dynamic> queryParameters = {
       's': 'Soccer',
-      'c': 'Indonesia',
+      'c': 'England',
     };
+    return get<String>(path, queryParameters: queryParameters).load();
+  }
+
+  Future<String> apiListLeagues() {
+    String path = "search_all_leagues.php";
+    Map<String, dynamic> queryParameters = {
+      'c': 'England',
+    };
+
     return get<String>(path, queryParameters: queryParameters).load();
   }
 }

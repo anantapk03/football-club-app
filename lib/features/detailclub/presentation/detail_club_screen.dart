@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,7 +22,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(),
-      body: _body(),
+      body: _body(context),
       floatingActionButton: Obx(() {
         return Padding(
           padding: EdgeInsets.all(16.0),
@@ -41,7 +42,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
-  Widget _body() {
+  Widget _body(BuildContext context) {
     return GetBuilder<DetailClubController>(
       builder: (ctrl) {
         final state = controller.detailClubState;
@@ -58,11 +59,11 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
           if (eventState is HistoryEventClubError) {
             List<HistoryEventClubModel> empty = [];
-            return _contentBody(state.detail, empty);
+            return _contentBody(state.detail, empty, context);
           }
 
           if (eventState is HistoryEventClubLoadSuccess) {
-            return _contentBody(state.detail, eventState.listHistory);
+            return _contentBody(state.detail, eventState.listHistory, context);
           }
         }
 
@@ -99,9 +100,9 @@ class DetailClubScreen extends GetView<DetailClubController> {
   }
 
   Widget _contentBody(DetailClubModel detailClub,
-      List<HistoryEventClubModel> listHistoryEvent) {
+      List<HistoryEventClubModel> listHistoryEvent, BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Padding(
         padding: EdgeInsets.all(8.0),
         child: Column(
@@ -130,10 +131,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
             const SizedBox(
               height: 20,
             ),
-            Text(
-              "Info",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
+            _headerTitle(Icons.info, "Info"),
             const SizedBox(
               height: 5,
             ),
@@ -144,13 +142,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
             const SizedBox(
               height: 16,
             ),
-            Text(
-              "Description",
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
-            ),
+            _headerTitle(Icons.description, "Description"),
             const SizedBox(
               height: 8.0,
             ),
@@ -187,39 +179,61 @@ class DetailClubScreen extends GetView<DetailClubController> {
               }),
             ),
             const SizedBox(height: 8.0),
-            Text(
-              "Social Media",
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
-            ),
+            _headerTitle(Icons.cloud_circle, "Social Media"),
             const SizedBox(
-              height: 8.0,
+              height: 10.0,
             ),
             _socialMediaLinks(detailClub),
             const SizedBox(
-              height: 16,
+              height: 18,
             ),
-            Text(
-              "History Events",
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
-            ),
+            _headerTitle(Icons.event, "History Event"),
             const SizedBox(
-              height: 8.0,
+              height: 12.0,
             ),
             Container(
               // Ubah Expanded menjadi Container
-              height: 300, // Berikan tinggi yang sesuai
+              // Berikan tinggi yang sesuai
+              height: 200,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(
+                          0.5), // Warna bayangan dengan transparansi
+                      spreadRadius:
+                          2, // Menentukan seberapa jauh bayangan menyebar
+                      blurRadius: 8, // Seberapa kabur bayangan
+                      offset: Offset(0,
+                          4), // Posisi bayangan (x,y). Offset(0,4) artinya bayangan akan berada di bawah
+                    ),
+                  ]),
+              // width: 300,
               child: _historyEventList(listHistoryEvent),
             ),
-            const SizedBox(height: 80),
+            const SizedBox(height: 100),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _headerTitle(IconData icon, String label) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          weight: 10.0,
+          color: Colors.grey,
+        ),
+        SizedBox(
+          width: 5.0,
+        ),
+        Text(
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          label,
+        ),
+      ],
     );
   }
 
@@ -330,15 +344,27 @@ class DetailClubScreen extends GetView<DetailClubController> {
     ));
   }
 
-  Widget _historyEventItem(HistoryEventClubModel? data) {
+  Widget _historyEventItem(HistoryEventClubModel? data, BuildContext context) {
+    var date = _convertDate(data?.dateEvent ?? "05-09-2003");
+    print("date item : $date");
     return Container(
-      padding: EdgeInsets.all(8.0),
-      width: double.infinity, // Mengatur lebar item
+      width: MediaQuery.sizeOf(context).width - 40,
+      padding: EdgeInsets.all(16.0),
+      height: 300,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-      ),
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 8,
+              offset: Offset(0,
+                  4), // Posisi bayangan (x,y). Offset(0,4) artinya bayangan akan berada di bawah
+            ),
+          ]),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             data?.strLeague ?? "BRI Liga",
@@ -351,12 +377,30 @@ class DetailClubScreen extends GetView<DetailClubController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CachedNetworkImage(
-                imageUrl: data?.strHomeTeamBadge ?? "",
-                width: 30,
-                height: 30,
+              Column(
+                children: [
+                  data?.strHomeTeamBadge != null
+                      ? CachedNetworkImage(
+                          imageUrl: data?.strHomeTeamBadge ?? "",
+                          width: 40,
+                          height: 40,
+                        )
+                      : Image.asset(
+                          "assets/images/logo_app.png",
+                          width: 40,
+                          height: 40,
+                        ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(data?.strHomeTeam ?? "Arema",
+                      style:
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                ],
               ),
-              Text(data?.strHomeTeam ?? "Arema"),
+              SizedBox(
+                width: 8.0,
+              ),
               Text(
                 "VS",
                 style: TextStyle(
@@ -364,11 +408,30 @@ class DetailClubScreen extends GetView<DetailClubController> {
                     fontWeight: FontWeight.w600,
                     color: Colors.red),
               ),
-              Text(data?.strAwayTeam ?? "Persija"),
-              CachedNetworkImage(
-                imageUrl: data?.strAwayTeamBadge ?? "",
-                width: 30,
-                height: 30,
+              SizedBox(
+                width: 8.0,
+              ),
+              Column(
+                children: [
+                  data?.strHomeTeamBadge != null
+                      ? CachedNetworkImage(
+                          imageUrl: data?.strAwayTeamBadge ?? "",
+                          width: 40,
+                          height: 40,
+                        )
+                      : Image.asset(
+                          "assets/images/logo_app.png",
+                          width: 40,
+                          height: 40,
+                        ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    data?.strAwayTeam ?? "Persija",
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
+                  ),
+                ],
               ),
             ],
           ),
@@ -383,22 +446,40 @@ class DetailClubScreen extends GetView<DetailClubController> {
           SizedBox(
             height: 12,
           ),
-          Text(data?.dateEvent ?? "24-07-2024")
+          Text(date ?? "24 Juli 2024")
         ],
       ),
     );
   }
 
+  String? _convertDate(String? date) {
+    print("date Event : $date");
+    if (date == null) return null;
+
+    try {
+      // Parsing tanggal dengan format "dd-MM-yyyy"
+      DateTime parsedDate = DateFormat('yyyy-MM-dd').parse(date);
+
+      // Mengonversi tanggal ke format "d MMMM yyyy"
+      String formattedDate = DateFormat('d MMMM yyyy').format(parsedDate);
+
+      return formattedDate;
+    } catch (e) {
+      // Jika terjadi kesalahan parsing
+      print("Error parsing : $e");
+      return null;
+    }
+  }
+
   Widget _historyEventList(List<HistoryEventClubModel> listData) {
     return ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        scrollDirection: Axis.vertical,
+        scrollDirection: Axis.horizontal,
         itemCount: listData.length,
         itemBuilder: (context, index) {
           final historyEvent = listData[index];
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: _historyEventItem(historyEvent),
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: _historyEventItem(historyEvent, context),
           );
         });
   }
