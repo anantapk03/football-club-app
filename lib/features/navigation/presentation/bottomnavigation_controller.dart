@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../components/config/app_route.dart';
 import '../../favorite/binding/favorite_binding.dart';
 import '../../favorite/presentation/favorite_screen.dart';
+import '../../profile/binding/profile_binding.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../teams/binding/team_binding.dart';
 import '../../teams/presentation/team_screen.dart';
@@ -62,9 +63,9 @@ class BottomNavigationController extends GetxController {
 
     if (settings.name == AppRoute.profile) {
       return GetPageRoute(
-        settings: settings,
-        page: () => const ProfileScreen(),
-      );
+          settings: settings,
+          page: () => const ProfileScreen(),
+          binding: ProfileBinding());
     }
 
     return null;

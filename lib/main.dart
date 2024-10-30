@@ -69,14 +69,27 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('id');
+  final _storage = StorageUtil(SecureStorage());
 
   @override
   void initState() {
+    _fetchLocale().then((locale) {
+      setState(() {
+        _locale = locale;
+      });
+    });
     super.initState();
     FirebaseNotificationUtil().notificationService.initNotification();
     FirebaseNotificationUtil().callListenerOnMessageForeground();
     FirebaseNotificationUtil().callListenerOnMessageBackground();
     DeepLinkUtil().initialDeepLinking();
+  }
+
+  Future<Locale> _fetchLocale() async {
+    var prefs = await _storage.getLanguage();
+
+    String languageCode = prefs?.split('-').firstOrNull ?? 'id';
+    return Locale(languageCode);
   }
 
   @override
@@ -107,6 +120,9 @@ class _MyAppState extends State<MyApp> {
       ],
       supportedLocales: const [Locale('en'), Locale('id')],
       locale: _locale,
+      localeResolutionCallback: (_, __) {
+        return _locale;
+      },
     );
   }
 }

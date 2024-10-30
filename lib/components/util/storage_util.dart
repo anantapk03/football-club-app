@@ -1,10 +1,11 @@
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import '../ext/string_ext.dart';
 
+const _language = "language";
 
 class StorageUtil {
-  final IStorage  _storage;
+  final IStorage _storage;
   final String _userId = "userId";
   final String _hasLogin = "hasLogin";
 
@@ -12,15 +13,23 @@ class StorageUtil {
 
   Future<String?> getUserId() => _storage.read(key: _userId);
 
-  setUserId(String userId)async => await _storage.write(key: _userId, value: userId);
+  setUserId(String userId) async =>
+      await _storage.write(key: _userId, value: userId);
 
   Future<bool?> hasLogin() => _storage.readBoolean(key: _hasLogin);
 
-  setLogin(String loginState) => _storage.write(key: _hasLogin, value: loginState);
-
+  setLogin(String loginState) =>
+      _storage.write(key: _hasLogin, value: loginState);
 
   Future<void> removeAll() => _storage.deleteAll();
 
+  Future setLanguage(String lang) async {
+    await _storage.write(key: _language, value: lang);
+  }
+
+  Future<String?> getLanguage() async {
+    return await _storage.read(key: _language);
+  }
 }
 
 class SecureStorage implements IStorage {
@@ -48,17 +57,17 @@ class SecureStorage implements IStorage {
 
   @override
   Future<bool?> readBoolean({required String key}) {
-    return _storage.read(key: key).then((value) =>  value?.parseBool());
+    return _storage.read(key: key).then((value) => value?.parseBool());
   }
 
   @override
   Future<double?> readDouble({required String key}) {
-    return _storage.read(key: key).then((value) =>  double.parse(value ?? ""));
+    return _storage.read(key: key).then((value) => double.parse(value ?? ""));
   }
 
   @override
   Future<int?> readInt({required String key}) {
-    return _storage.read(key: key).then((value) =>  int.tryParse(value ?? ""));
+    return _storage.read(key: key).then((value) => int.tryParse(value ?? ""));
   }
 
   @override
@@ -70,9 +79,6 @@ class SecureStorage implements IStorage {
   Future<bool> has(String key) async {
     return await _storage.read(key: key) != null;
   }
-
-
-
 }
 
 abstract class IStorage {

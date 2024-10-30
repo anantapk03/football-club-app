@@ -23,6 +23,16 @@
     "emptyHistoryEvent" : "History Event Not Found",
     "yearEstablished": "Year Established",
     "stadionLocation": "Location Stadion",
-    "failedToLoadClubDetails" : "Failed to load club details"
+    "failedToLoadClubDetails" : "Failed to load club details",
+
+    "language": "Language",
+    "greating": "Hallo",
+    "welcomeText": "Welcome in Football Club App",
+    "totalFavorite": "Total Favorite",
+    "logout": "Logout",
+    "indonesia": "Indonesian",
+    "english": "English",
+    "selectLanguage": "Select Language",
+    "defaultLang": "Default"
 
 }

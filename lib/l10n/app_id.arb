@@ -22,5 +22,15 @@
     "setAsFavorite": "Diatur sebagai Favorit",
     "yearEstablished": "Tahun Didirikan",
     "stadionLocation": "Lokasi Stadion",
-    "failedToLoadClubDetails" : "Gagal menarik data detil klub"
+    "failedToLoadClubDetails" : "Gagal menarik data detil klub",
+
+    "language": "Bahasa",
+    "greating": "Halo",
+    "welcomeText": "Selamat Datang di Aplikasi Football Club",
+    "totalFavorite": "Jumlah Favorit",
+    "logout": "Keluar",
+    "indonesia": "Indonesia",
+    "english": "Inggris",
+    "selectLanguage": "Pilih Bahasa",
+    "defaultLang": "Bawaan"
 }

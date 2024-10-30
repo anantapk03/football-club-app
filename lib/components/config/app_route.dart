@@ -10,6 +10,7 @@ import '../../features/favorite/binding/favorite_binding.dart';
 import '../../features/favorite/presentation/favorite_screen.dart';
 import '../../features/navigation/binding/bottomnavigation_binding.dart';
 import '../../features/navigation/presentation/bottomnavigation_screen.dart';
+import '../../features/profile/binding/profile_binding.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/teams/binding/team_binding.dart';
@@ -51,6 +52,9 @@ class AppRoute {
         name: detailDeepLink,
         page: () => const DetailClubScreen(),
         binding: DetailClubBinding()),
-    GetPage(name: profile, page: () => const ProfileScreen())
+    GetPage(
+        name: profile,
+        page: () => const ProfileScreen(),
+        binding: ProfileBinding())
   ];
 }
