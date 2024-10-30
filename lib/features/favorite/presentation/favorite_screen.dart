@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 import '../../../components/config/app_route.dart';
@@ -17,12 +18,12 @@ class FavoriteScreen extends GetView<FavoriteController> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: _body(),
+        body: _body(context),
       ),
     );
   }
 
-  Widget _body() {
+  Widget _body(BuildContext context) {
     return GetBuilder<FavoriteController>(
       builder: (ctrl) {
         final state = ctrl.favoriteState.value;
@@ -33,7 +34,7 @@ class FavoriteScreen extends GetView<FavoriteController> {
 
         if (state is FavoriteLoadSuccess) {
           if (state.listClub.isEmpty) {
-            return _emptyState();
+            return _emptyState(context);
           } else {
             return _contentBody(state.listClub);
           }
@@ -45,16 +46,16 @@ class FavoriteScreen extends GetView<FavoriteController> {
 
   Widget _loading() => const ListClubShimmer();
 
-  Widget _emptyState() {
-    return const Center(
+  Widget _emptyState(BuildContext context) {
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.favorite_border, size: 80, color: Colors.grey),
-          SizedBox(height: 16),
+          const Icon(Icons.favorite_border, size: 80, color: Colors.grey),
+          const SizedBox(height: 16),
           Text(
-            'No favorites yet!',
-            style: TextStyle(fontSize: 24, color: Colors.grey),
+            AppLocalizations.of(context)?.noFavoritesYet ?? 'No favorites yet!',
+            style: const TextStyle(fontSize: 24, color: Colors.grey),
           ),
         ],
       ),
@@ -70,7 +71,7 @@ class FavoriteScreen extends GetView<FavoriteController> {
           padding: const EdgeInsets.all(8.0),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 0.75,
+            childAspectRatio: 1,
             crossAxisSpacing: 8.0,
             mainAxisSpacing: 8.0,
           ),
@@ -110,7 +111,7 @@ class FavoriteScreen extends GetView<FavoriteController> {
                     const BorderRadius.vertical(top: Radius.circular(15)),
                 child: CachedNetworkImage(
                   imageUrl: item.badge!,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   placeholder: (context, url) => Center(
                     child: _buildShimmerImage(),
                   ),

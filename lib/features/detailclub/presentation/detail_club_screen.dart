@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -21,7 +22,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
+      appBar: _appBar(context),
       body: _body(context),
       floatingActionButton: Obx(() {
         return Padding(
@@ -35,9 +36,9 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
-  PreferredSizeWidget _appBar() {
+  PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
-      title: const Text("Detail Club"),
+      title: Text(AppLocalizations.of(context)?.detailClub ?? "Detail Club"),
       centerTitle: true,
     );
   }
@@ -68,7 +69,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
         }
 
         if (state is DetailClubError) {
-          return _error();
+          return _error(context);
         }
 
         return Container();
@@ -78,21 +79,22 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
   Widget _loading() => const DetailShimmer();
 
-  Widget _error() {
+  Widget _error(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error, color: Colors.red, size: 64),
           const SizedBox(height: 16),
-          const Text(
-            'Failed to load club details',
+          Text(
+            AppLocalizations.of(context)?.failedToLoadClubDetails ??
+                'Failed to load club details',
             style: TextStyle(fontSize: 18, color: Colors.red),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => controller.loadDetailClub(Get.arguments),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
           ),
         ],
       ),
@@ -131,18 +133,20 @@ class DetailClubScreen extends GetView<DetailClubController> {
             const SizedBox(
               height: 20,
             ),
-            _headerTitle(Icons.info, "Info"),
+            _headerTitle(
+                Icons.info, AppLocalizations.of(context)?.info ?? "Info"),
             const SizedBox(
               height: 5,
             ),
             Text(
-              "Year Established : ${detailClub.formedYear},\nLocation Stadion : ${detailClub.stadion}",
+              "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"}: ${detailClub.formedYear},\n${AppLocalizations.of(context)?.stadionLocation ?? "Location Stadion"} : ${detailClub.stadion}",
               style: TextStyle(fontSize: 14),
             ),
             const SizedBox(
               height: 16,
             ),
-            _headerTitle(Icons.description, "Description"),
+            _headerTitle(Icons.description,
+                AppLocalizations.of(context)?.description ?? "Description"),
             const SizedBox(
               height: 8.0,
             ),
@@ -168,8 +172,8 @@ class DetailClubScreen extends GetView<DetailClubController> {
                 return Center(
                   child: Text(
                     controller.isFullDetailDescription.value
-                        ? "Read less"
-                        : "Read more",
+                        ? AppLocalizations.of(context)?.readLess ?? "Read less"
+                        : AppLocalizations.of(context)?.readMore ?? "Read more",
                     style: const TextStyle(
                       color: Colors.blue,
                       fontWeight: FontWeight.w400,
@@ -179,7 +183,8 @@ class DetailClubScreen extends GetView<DetailClubController> {
               }),
             ),
             const SizedBox(height: 8.0),
-            _headerTitle(Icons.cloud_circle, "Social Media"),
+            _headerTitle(Icons.cloud_circle,
+                AppLocalizations.of(context)?.socialMedia ?? "Social Media"),
             const SizedBox(
               height: 10.0,
             ),
@@ -187,7 +192,8 @@ class DetailClubScreen extends GetView<DetailClubController> {
             const SizedBox(
               height: 18,
             ),
-            _headerTitle(Icons.event, "History Event"),
+            _headerTitle(Icons.event,
+                AppLocalizations.of(context)?.historyEvent ?? "History Event"),
             const SizedBox(
               height: 12.0,
             ),
@@ -205,7 +211,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
                       offset: Offset(0, 4),
                     ),
                   ]),
-              child: _historyEventList(listHistoryEvent),
+              child: _historyEventList(listHistoryEvent, context),
             ),
             const SizedBox(height: 100),
           ],
@@ -287,7 +293,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
                 return _floatingButtonShimmer();
               } else {
                 bool isFavorite = snapshot.data ?? false;
-                return _floatingActionButton(isFavorite);
+                return _floatingActionButton(isFavorite, context);
               }
             },
           ),
@@ -296,7 +302,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
-  Widget _floatingActionButton(bool isFavorite) {
+  Widget _floatingActionButton(bool isFavorite, BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: isFavorite ? Colors.redAccent : Colors.blueAccent,
@@ -306,7 +312,10 @@ class DetailClubScreen extends GetView<DetailClubController> {
         padding: EdgeInsets.all(15.0),
         child: Center(
           child: Text(
-            isFavorite ? "Set as Favorite" : "Favorite",
+            isFavorite
+                ? AppLocalizations.of(context)?.setAsFavorite ??
+                    "Set as Favorite"
+                : AppLocalizations.of(context)?.favorite ?? "Favorite",
             style: TextStyle(fontSize: 15, color: Colors.white),
           ),
         ),
@@ -465,7 +474,8 @@ class DetailClubScreen extends GetView<DetailClubController> {
     }
   }
 
-  Widget _historyEventList(List<HistoryEventClubModel> listData) {
+  Widget _historyEventList(
+      List<HistoryEventClubModel> listData, BuildContext context) {
     if (listData.isNotEmpty) {
       return ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -479,7 +489,8 @@ class DetailClubScreen extends GetView<DetailClubController> {
           });
     } else {
       return Center(
-        child: Text("Empty History Event"),
+        child: Text(AppLocalizations.of(context)?.emptyHistoryEvent ??
+            "Empty History Event"),
       );
     }
   }

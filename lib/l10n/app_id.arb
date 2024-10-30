@@ -1,0 +1,26 @@
+{
+    "searchTeamByName": "Cari tim berdasarkan nama",
+    "listTeam": "Daftar Tim",
+    "home": "Beranda",
+    "favorites": "Favorit",
+    "profile": "Akun",
+    "showMore": "Tampilkan lebih",
+    "showLess": "Tampilkan sedikit",
+    "failedToLoadTeams": "Gagal menarik data daftar tim",
+
+    "noFavoritesYet": "Tidak ada daftar favorit!",
+    "emptyHistoryEvent" : "Riwayat Acara Tidak Ditemukan",
+
+    "detailClub": "Detil Klub",
+    "info": "Info",
+    "description": "Deskripsi",
+    "socialMedia": "Sosial Media",
+    "readMore": "Baca lebih lanjut",
+    "readLess": "Baca lebih sedikit",
+    "historyEvent": "Riwayat Acara",
+    "favorite": "Favorit",
+    "setAsFavorite": "Diatur sebagai Favorit",
+    "yearEstablished": "Tahun Didirikan",
+    "stadionLocation": "Lokasi Stadion",
+    "failedToLoadClubDetails" : "Gagal menarik data detil klub"
+}

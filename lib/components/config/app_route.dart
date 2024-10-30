@@ -10,6 +10,7 @@ import '../../features/favorite/binding/favorite_binding.dart';
 import '../../features/favorite/presentation/favorite_screen.dart';
 import '../../features/navigation/binding/bottomnavigation_binding.dart';
 import '../../features/navigation/presentation/bottomnavigation_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/teams/binding/team_binding.dart';
 import '../../features/teams/presentation/team_screen.dart';
@@ -27,6 +28,7 @@ class AppRoute {
   static const String detail = '/detail';
   static const String favorite = '/favorite';
   static const String detailDeepLink = '/detail_deep_link';
+  static const String profile = '/profile';
 
   static List<GetPage> pages = [
     GetPage(name: defaultRoute, page: () => const SplashScreen()),
@@ -48,6 +50,7 @@ class AppRoute {
     GetPage(
         name: detailDeepLink,
         page: () => const DetailClubScreen(),
-        binding: DetailClubBinding())
+        binding: DetailClubBinding()),
+    GetPage(name: profile, page: () => const ProfileScreen())
   ];
 }

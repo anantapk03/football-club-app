@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
@@ -9,6 +10,8 @@ import 'list_league_state.dart';
 import 'team_state.dart';
 
 class TeamController extends GetxController {
+  final isFocusNodeSearch = FocusNode().obs;
+  var isSearchFocused = false.obs;
   final TeamRepository _repository;
   TeamState teamState = TeamIdle();
   ListLeagueState listLeagueState = ListLeagueIdle();
@@ -22,8 +25,18 @@ class TeamController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    isFocusNodeSearch.value.addListener(() {
+      isSearchFocused.value = isFocusNodeSearch.value.hasFocus;
+    });
     _loadAllTeam();
     _loadAllLeagues();
+  }
+
+  @override
+  void onClose() {
+    isFocusNodeSearch.value
+        .dispose(); // Pastikan untuk dispose FocusNode saat tidak dipakai
+    super.onClose();
   }
 
   void _loadAllTeam() {

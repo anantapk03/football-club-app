@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 import 'bottomnavigation_controller.dart';
@@ -20,7 +21,7 @@ class BottomnavigationScreen extends GetView<BottomNavigationController> {
       },
       child: Scaffold(
         body: _body(),
-        bottomNavigationBar: _bottomNavigationBar(),
+        bottomNavigationBar: _bottomNavigationBarCustom(context),
       ),
     );
   }
@@ -33,18 +34,95 @@ class BottomnavigationScreen extends GetView<BottomNavigationController> {
     );
   }
 
-  _bottomNavigationBar() {
-    return Obx(
-      () => BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          _bottomNavigationBarItem(const Icon(Icons.home), "Home"),
-          _bottomNavigationBarItem(const Icon(Icons.favorite), "Favorites"),
-        ],
-        currentIndex: controller.currentIndex.value,
-        selectedItemColor: const Color(0xff593265),
-        onTap: controller.changePage,
+  _bottomNavigationBarCustom(
+    BuildContext context,
+  ) {
+    return Obx(() {
+      return Container(
+          padding: const EdgeInsets.all(8.0),
+          width: MediaQuery.sizeOf(context).width,
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 20,
+                ),
+              ]),
+          child: BottomAppBar(
+            color: Colors.white,
+            padding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                _itemBottomNavigationMenu(() {
+                  controller.changePage(0);
+                },
+                    context,
+                    AppLocalizations.of(context)?.home ?? "home",
+                    _currentTextStyle(controller.currentIndex.value, 0),
+                    Icons.home),
+                _itemBottomNavigationMenu(() {
+                  controller.changePage(1);
+                },
+                    context,
+                    AppLocalizations.of(context)?.favorites ?? "Favorites",
+                    _currentTextStyle(controller.currentIndex.value, 1),
+                    Icons.favorite),
+                _itemBottomNavigationMenu(() {
+                  controller.changePage(2);
+                },
+                    context,
+                    AppLocalizations.of(context)?.profile ?? "Profile",
+                    _currentTextStyle(controller.currentIndex.value, 2),
+                    Icons.account_circle_outlined),
+              ],
+            ),
+          ));
+    });
+  }
+
+  _itemBottomNavigationMenu(VoidCallback onTap, BuildContext context,
+      String label, TextStyle style, IconData icon) {
+    return InkWell(
+      splashFactory: NoSplash.splashFactory,
+      onTap: onTap,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width / 5 - 16.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: style,
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  _currentTextStyle(int selectedItem, int value) {
+    if (selectedItem == value) {
+      return const TextStyle(
+          fontSize: 12, fontWeight: FontWeight.w500, color: Colors.purple);
+    } else {
+      return const TextStyle(
+        fontWeight: FontWeight.w400,
+        color: Colors.black,
+        fontSize: 12,
+      );
+    }
   }
 
   _bottomNavigationBarItem(Icon icon, String label) {

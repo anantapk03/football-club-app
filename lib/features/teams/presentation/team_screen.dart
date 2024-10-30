@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 import '../../../components/config/app_route.dart';
@@ -19,99 +20,117 @@ class TeamScreen extends GetView<TeamController> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: _searchBar(),
-            ),
-            SliverToBoxAdapter(child: Obx(() {
-              return controller.searchQuery.value.isEmpty
-                  ? Container(child: _buildListLeague(context))
-                  : Container();
-            })),
-            const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 8.0,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            controller.onInit();
+          },
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: _searchBar(context),
               ),
-            ),
-            const SliverToBoxAdapter(
-              child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.dataset,
-                        color: Colors.blue,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "List Team",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black),
-                      ),
-                    ],
-                  )),
-            ),
-            _bodyListTeam(),
-            SliverToBoxAdapter(
-              child: Obx(() {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: controller.searchQuery.value.isEmpty
-                        ? GestureDetector(
-                            onTap: () {
-                              if (controller.isShowMore.value) {
-                                controller.isShowMore.value = false;
-                              } else {
-                                controller.isShowMore.value = true;
-                              }
-                            },
-                            child: Text(
-                              controller.isShowMore.value
-                                  ? "Show less"
-                                  : "Show more",
-                              style: const TextStyle(
-                                  color: Colors.blueAccent,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          )
-                        : Container(),
-                  ),
-                );
-              }),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _searchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        onChanged: (query) => controller.searchTeams(query),
-        decoration: InputDecoration(
-          hintText: "Search team by name",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
+              // SliverToBoxAdapter(child: Obx(() {
+              //   return controller.searchQuery.value.isEmpty
+              //       ? Container(child: _buildListLeague(context))
+              //       : Container();
+              // })),
+              SliverToBoxAdapter(child: Obx(() {
+                return !controller.isSearchFocused
+                        .value // Memeriksa apakah search bar fokus
+                    ? Container(
+                        child: _buildListLeague(
+                            context)) // Jika tidak fokus, tampilkan list
+                    : Container();
+              })),
+              const SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 8.0,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.dataset,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          AppLocalizations.of(context)?.listTeam ?? "List Team",
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black),
+                        ),
+                      ],
+                    )),
+              ),
+              _bodyListTeam(context),
+              SliverToBoxAdapter(
+                child: Obx(() {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: !controller.isSearchFocused.value
+                          ? GestureDetector(
+                              onTap: () {
+                                if (controller.isShowMore.value) {
+                                  controller.isShowMore.value = false;
+                                } else {
+                                  controller.isShowMore.value = true;
+                                }
+                              },
+                              child: Text(
+                                controller.isShowMore.value
+                                    ? AppLocalizations.of(context)?.showLess ??
+                                        "Show less"
+                                    : AppLocalizations.of(context)?.showMore ??
+                                        "Show more",
+                                style: const TextStyle(
+                                    color: Colors.blueAccent,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            )
+                          : Container(),
+                    ),
+                  );
+                }),
+              )
+            ],
           ),
-          prefixIcon: const Icon(Icons.search),
-          filled: true,
-          fillColor: Colors.transparent,
         ),
       ),
     );
   }
 
-  Widget _bodyListTeam() {
+  Widget _searchBar(BuildContext context) {
+    return Obx(() {
+      return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            focusNode: controller.isFocusNodeSearch.value,
+            onChanged: (query) => controller.searchTeams(query),
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)?.searchTeamByName ??
+                  "Search team by name",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              prefixIcon: const Icon(Icons.search),
+              filled: true,
+              fillColor: Colors.transparent,
+            ),
+          ));
+    });
+  }
+
+  Widget _bodyListTeam(BuildContext context) {
     return GetBuilder<TeamController>(
       builder: (ctrl) {
         final state = controller.teamState;
@@ -125,7 +144,7 @@ class TeamScreen extends GetView<TeamController> {
         }
 
         if (state is TeamError) {
-          return SliverToBoxAdapter(child: _error());
+          return SliverToBoxAdapter(child: _error(context));
         }
 
         return SliverToBoxAdapter(child: Container());
@@ -157,24 +176,55 @@ class TeamScreen extends GetView<TeamController> {
     });
   }
 
-  Widget _carouselItem(BuildContext context, LeagueItemModel? itemLeague) {
-    return Container(
-      width: MediaQuery.sizeOf(context).width - 32,
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      decoration: BoxDecoration(
-        color: Colors.black12,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: itemLeague?.strLogo == null && itemLeague?.strBadge == null
-            ? Image.asset(
-                "assets/images/logo_app.png",
-                fit: BoxFit.cover,
-                // height: 300,
-              )
-            : CachedNetworkImage(
-                imageUrl: itemLeague?.strLogo ?? itemLeague!.strBadge ?? ""),
+  Widget _carouselItemCustom(
+      BuildContext context, LeagueItemModel? itemLeague) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: double.infinity,
+        height: 168,
+        decoration: BoxDecoration(
+            color: Colors.black12,
+            borderRadius: BorderRadius.circular(10.0),
+            image: DecorationImage(
+                image: NetworkImage(
+                    itemLeague?.strLogo ?? itemLeague!.strBadge ?? ""),
+                fit: BoxFit.contain)),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  gradient: LinearGradient(
+                      begin: Alignment.center,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.1),
+                        Colors.black,
+                      ])),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 18.0, horizontal: 12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    itemLeague?.strLeague ?? "",
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -191,7 +241,7 @@ class TeamScreen extends GetView<TeamController> {
             itemExtent: MediaQuery.sizeOf(context).width,
             children: List.generate(listLeague?.length ?? 0, (int index) {
               var dataLeagueItem = listLeague?[index];
-              return _carouselItem(context, dataLeagueItem);
+              return _carouselItemCustom(context, dataLeagueItem);
             })),
       ),
     );
@@ -219,21 +269,22 @@ class TeamScreen extends GetView<TeamController> {
 
   Widget _loading() => const ListClubShimmer();
 
-  Widget _error() {
+  Widget _error(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.error, color: Colors.red, size: 64),
           const SizedBox(height: 16),
-          const Text(
-            'Failed to load teams',
+          Text(
+            AppLocalizations.of(context)?.failedToLoadTeams ??
+                "Failed to Load Teams",
             style: TextStyle(fontSize: 18, color: Colors.red),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => controller.onInit(),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
           ),
         ],
       ),

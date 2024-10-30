@@ -1,0 +1,28 @@
+{
+    "searchTeamByName": "Search team by name",
+    "listTeam": "List Team",
+    "home": "Home",
+    "favorites": "Favorites",
+    "profile": "Profile",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "retry": "Retry",
+    "failedToLoadTeams": "Failed to Load Team",
+
+    "noFavoritesYet": "No Favorites Yet!",
+
+    "detailClub": "Detail Club",
+    "info": "Info",
+    "description": "Description",
+    "socialMedia": "Social Media",
+    "readMore": "Read more",
+    "readLess": "Read less",
+    "historyEvent": "History Event",
+    "favorite": "Favorite",
+    "setAsFavorite": "Set as Favorite",
+    "emptyHistoryEvent" : "History Event Not Found",
+    "yearEstablished": "Year Established",
+    "stadionLocation": "Location Stadion",
+    "failedToLoadClubDetails" : "Failed to load club details"
+
+}

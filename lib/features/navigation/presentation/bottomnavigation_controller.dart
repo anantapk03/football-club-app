@@ -4,13 +4,18 @@ import 'package:get/get.dart';
 import '../../../components/config/app_route.dart';
 import '../../favorite/binding/favorite_binding.dart';
 import '../../favorite/presentation/favorite_screen.dart';
+import '../../profile/presentation/profile_screen.dart';
 import '../../teams/binding/team_binding.dart';
 import '../../teams/presentation/team_screen.dart';
 
 class BottomNavigationController extends GetxController {
   // static BottomNavigationController get to => Get.find();
   var currentIndex = 0.obs;
-  final pages = <String>[AppRoute.listTeam, AppRoute.favorite];
+  final pages = <String>[
+    AppRoute.listTeam,
+    AppRoute.favorite,
+    AppRoute.profile
+  ];
 
   @override
   void onInit() async {
@@ -52,6 +57,13 @@ class BottomNavigationController extends GetxController {
         settings: settings,
         page: () => const FavoriteScreen(),
         binding: FavoriteBinding(),
+      );
+    }
+
+    if (settings.name == AppRoute.profile) {
+      return GetPageRoute(
+        settings: settings,
+        page: () => const ProfileScreen(),
       );
     }
 

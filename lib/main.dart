@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 
@@ -55,9 +57,18 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
+
+  static void setLocal(BuildContext context, Locale value) {
+    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?.setState(() {
+      state._locale = value;
+    });
+  }
 }
 
 class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('id');
+
   @override
   void initState() {
     super.initState();
@@ -87,6 +98,14 @@ class _MyAppState extends State<MyApp> {
         page: () => const UnknownRoutePage(),
       ),
       getPages: AppRoute.pages,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en'), Locale('id')],
+      locale: _locale,
     );
   }
 }
