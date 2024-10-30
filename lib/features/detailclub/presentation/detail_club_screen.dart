@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -26,7 +24,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
       body: _body(context),
       floatingActionButton: Obx(() {
         return Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: SizedBox(
               width: double.infinity,
               child: _buildFavoriteButton(controller.id.value)),
@@ -89,7 +87,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
           Text(
             AppLocalizations.of(context)?.failedToLoadClubDetails ??
                 'Failed to load club details',
-            style: TextStyle(fontSize: 18, color: Colors.red),
+            style: const TextStyle(fontSize: 18, color: Colors.red),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -106,7 +104,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -140,7 +138,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
             ),
             Text(
               "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"}: ${detailClub.formedYear},\n${AppLocalizations.of(context)?.stadionLocation ?? "Location Stadion"} : ${detailClub.stadion}",
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(
               height: 16,
@@ -202,13 +200,13 @@ class DetailClubScreen extends GetView<DetailClubController> {
               // Berikan tinggi yang sesuai
               height: 200,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 8,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ]),
               child: _historyEventList(listHistoryEvent, context),
@@ -228,11 +226,11 @@ class DetailClubScreen extends GetView<DetailClubController> {
           weight: 10.0,
           color: Colors.grey,
         ),
-        SizedBox(
+        const SizedBox(
           width: 5.0,
         ),
         Text(
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           label,
         ),
       ],
@@ -306,17 +304,17 @@ class DetailClubScreen extends GetView<DetailClubController> {
     return Container(
       decoration: BoxDecoration(
         color: isFavorite ? Colors.redAccent : Colors.blueAccent,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
       ),
       child: Padding(
-        padding: EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(15.0),
         child: Center(
           child: Text(
             isFavorite
                 ? AppLocalizations.of(context)?.setAsFavorite ??
                     "Set as Favorite"
                 : AppLocalizations.of(context)?.favorite ?? "Favorite",
-            style: TextStyle(fontSize: 15, color: Colors.white),
+            style: const TextStyle(fontSize: 15, color: Colors.white),
           ),
         ),
       ),
@@ -342,7 +340,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
   }
 
   Widget _floatingButtonShimmer() {
-    return AppShimmer(
+    return const AppShimmer(
         child: SizedBox(
       width: double.infinity,
       height: 30,
@@ -353,17 +351,17 @@ class DetailClubScreen extends GetView<DetailClubController> {
     var date = _convertDate(data?.dateEvent ?? "2003-09-05");
     return Container(
       width: MediaQuery.sizeOf(context).width - 40,
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       height: 300,
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 8,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ]),
       child: Column(
@@ -371,10 +369,10 @@ class DetailClubScreen extends GetView<DetailClubController> {
         children: [
           Text(
             data?.strLeague ?? "BRI Liga",
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w500, color: Colors.blue),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Row(
@@ -397,21 +395,21 @@ class DetailClubScreen extends GetView<DetailClubController> {
                     height: 8.0,
                   ),
                   Text(data?.strHomeTeam ?? "Arema",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 12)),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8.0,
               ),
-              Text(
+              const Text(
                 "VS",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Colors.red),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8.0,
               ),
               Column(
@@ -427,26 +425,27 @@ class DetailClubScreen extends GetView<DetailClubController> {
                           width: 40,
                           height: 40,
                         ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Text(
                     data?.strAwayTeam ?? "Persija",
-                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400, fontSize: 12),
                   ),
                 ],
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           // Menambahkan tampilan skor hasil pertandingan
           Text(
             "${data?.intHomeScore ?? 0} - ${data?.intAwayScore ?? 0}",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
+          const SizedBox(
             height: 12,
           ),
           Text(date ?? "24 Juli 2024")
@@ -456,7 +455,6 @@ class DetailClubScreen extends GetView<DetailClubController> {
   }
 
   String? _convertDate(String? date) {
-    print("date Event : $date");
     if (date == null) return null;
 
     try {
@@ -468,8 +466,6 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
       return formattedDate;
     } catch (e) {
-      // Jika terjadi kesalahan parsing
-      print("Error parsing : $e");
       return null;
     }
   }

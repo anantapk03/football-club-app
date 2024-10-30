@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
@@ -34,13 +35,13 @@ Future<void> _notificationConfiguration() async {
     sound: true,
   );
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('Izin notifikasi diberikan');
+    Logger().i("Izin Notifikasi diberikan");
   } else {
-    print('Izin notifikasi ditolak');
+    Logger().i('Izin notifikasi ditolak');
   }
   messaging.getToken().then((String? token) {
     if (token != null) {
-      print('FCM Token: $token');
+      Logger().i('FCM Token: $token');
     }
   });
 }

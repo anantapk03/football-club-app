@@ -49,8 +49,8 @@ class TeamScreen extends GetView<TeamController> {
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 12.0),
                     child: Row(
                       children: [
                         const Icon(
@@ -279,7 +279,7 @@ class TeamScreen extends GetView<TeamController> {
           Text(
             AppLocalizations.of(context)?.failedToLoadTeams ??
                 "Failed to Load Teams",
-            style: TextStyle(fontSize: 18, color: Colors.red),
+            style: const TextStyle(fontSize: 18, color: Colors.red),
           ),
           const SizedBox(height: 16),
           ElevatedButton(

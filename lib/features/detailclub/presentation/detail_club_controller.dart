@@ -115,10 +115,7 @@ class DetailClubController extends GetxController {
   void firebaseController() {
     // Handle when onBackground
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print(
-          'Pesan diterima saat di foreground halaman detail: ${message.notification?.title}');
       if (message.notification != null) {
-        print('Notifikasi: ${message.notification?.title}');
         id.value = message.data['id'];
         loadDetailClub(id.value);
       }
