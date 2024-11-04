@@ -10,7 +10,7 @@ import 'list_league_state.dart';
 import 'team_state.dart';
 
 class TeamController extends GetxController {
-  final isFocusNodeSearch = FocusNode().obs;
+  final isFocusNodeSearch = FocusNode();
   var isSearchFocused = false.obs;
   final TeamRepository _repository;
   TeamState teamState = TeamIdle();
@@ -25,8 +25,8 @@ class TeamController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    isFocusNodeSearch.value.addListener(() {
-      isSearchFocused.value = isFocusNodeSearch.value.hasFocus;
+    isFocusNodeSearch.addListener(() {
+      isSearchFocused.value = isFocusNodeSearch.hasFocus;
     });
     _loadAllTeam();
     _loadAllLeagues();
@@ -34,7 +34,7 @@ class TeamController extends GetxController {
 
   @override
   void onClose() {
-    isFocusNodeSearch.value
+    isFocusNodeSearch
         .dispose(); // Pastikan untuk dispose FocusNode saat tidak dipakai
     super.onClose();
   }

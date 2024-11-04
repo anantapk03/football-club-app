@@ -5,4 +5,5 @@ class AppConst {
   static const String notificationToDetail = "detail";
   static const String notificationToListFavorites = "toListFavorites";
   static const String notificationFirebaseTopic = "firebaseTopic";
+  static const String databaseName = "my_football_club_database";
 }
