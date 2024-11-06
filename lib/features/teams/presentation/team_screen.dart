@@ -238,6 +238,8 @@ class TeamScreen extends GetView<TeamController> {
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.white),
+                    maxLines: 1, // Ensures it only takes one line
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(
                     height: 5,
@@ -259,7 +261,7 @@ class TeamScreen extends GetView<TeamController> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: CarouselView(
             elevation: 4,
-            itemSnapping: true,
+            itemSnapping: false,
             itemExtent: MediaQuery.sizeOf(context).width,
             children: List.generate(listLeague?.length ?? 0, (int index) {
               var dataLeagueItem = listLeague?[index];

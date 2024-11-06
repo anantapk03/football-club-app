@@ -370,7 +370,10 @@ class DetailClubScreen extends GetView<DetailClubController> {
           Text(
             data?.strLeague ?? "BRI Liga",
             style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.blue),
+                overflow: TextOverflow.ellipsis,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.blue),
           ),
           const SizedBox(
             height: 12,

@@ -2,12 +2,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
+import '../../../components/services/database/app_database.dart';
 import '../../../components/util/favorite_helper.dart';
 import '../../../components/util/firebase_notification_util.dart';
 import '../../../components/util/helper.dart';
 import '../../../components/util/state.dart';
 import '../../../notification_services.dart';
 import '../../favorite/presentation/favorite_controller.dart';
+import '../../profile/presentation/profile_controller.dart';
 import '../model/detail_club_model.dart';
 import '../model/history_event_club_model.dart';
 import '../repository/detailclub_repository.dart';
@@ -19,9 +21,11 @@ class DetailClubController extends GetxController {
   DetailClubState detailClubState = DetailClubIdle();
   HistoryEventClubState historyEventClubState = HistoryEventClubIdle();
   final FavoriteHelper _favoriteHelper;
+  final AppDatabase _appDatabase;
   final _logger = Logger();
   final isFullDetailDescription = false.obs;
-  DetailClubController(this._repository, this._favoriteHelper);
+  DetailClubController(
+      this._repository, this._favoriteHelper, this._appDatabase);
   List<HistoryEventClubModel>? listHistoryClub = [];
 
   FavoriteHelper get favoriteHelper => _favoriteHelper;
@@ -102,14 +106,33 @@ class DetailClubController extends GetxController {
     if (isFavorite) {
       await _favoriteHelper.removeFavorite(idTeam);
       FirebaseNotificationUtil().unsubscribeTopic(idTeam);
+      await (_appDatabase.delete(_appDatabase.clubTable)
+            ..where((club) => club.idTeam.equals(idTeam)))
+          .go(); // Penulisan delete dengan Drift
     } else {
       if (detailClub != null) {
         await _favoriteHelper.addFavorite(detailClub);
         FirebaseNotificationUtil().subscribeTopic(idTeam);
+        await _appDatabase.into(_appDatabase.clubTable).insert(
+            ClubTableCompanion.insert(
+                idTeam: idTeam,
+                nameTeam: detailClub?.nameTeam ?? "",
+                badge: detailClub?.badge ?? "",
+                formedYear: detailClub?.formedYear ?? "",
+                description: detailClub?.description ?? "",
+                facebookUrl: detailClub?.facebookUrl ?? "",
+                twitterUrl: detailClub?.twitterUrl ?? "",
+                instagramUrl: detailClub?.instagramUrl ?? "",
+                stadion: detailClub?.stadion ?? ""));
       }
     }
+
+    List<ClubTableData> allClubinDatabase =
+        await _appDatabase.select(_appDatabase.clubTable).get();
+    _logger.i("List Club on SQLite : ${allClubinDatabase.length}");
     update();
     Get.find<FavoriteController>().loadAllClubFavorite();
+    Get.find<ProfileController>().getTotalFavorite();
   }
 
   void firebaseController() {

@@ -13,6 +13,7 @@ import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
 import 'components/config/app_style.dart';
 import 'components/services/app_service.dart';
+import 'components/services/database/app_database.dart';
 import 'components/util/deep_link_util.dart';
 import 'components/util/firebase_notification_util.dart';
 import 'components/util/storage_util.dart';
@@ -50,6 +51,8 @@ Future<void> _notificationConfiguration() async {
 Future<void> _dependencyInjection() async {
   final storage = StorageUtil(SecureStorage());
   Get.lazyPut(() => storage, fenix: true);
+  // Jadikan AppDatabase singleton dengan `Get.put` dan `permanent: true`.
+  Get.put(AppDatabase(), permanent: true);
   Get.put(AppService(storage));
 }
 
