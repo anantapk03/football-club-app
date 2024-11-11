@@ -42,6 +42,10 @@ android {
         applicationId = "com.example.football_club_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        manifestPlaceholders = [
+                GMAP_KEY: project.findProperty("GMAP_KEY") ?: "",
+                applicationName: ""
+        ]
         minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
