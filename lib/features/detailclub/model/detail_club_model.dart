@@ -8,18 +8,19 @@ class DetailClubModel {
   String? instagramUrl;
   String? twitterUrl;
   String? stadion;
+  String? location;
 
-  DetailClubModel({
-    this.idTeam,
-    this.nameTeam,
-    this.badge,
-    this.formedYear,
-    this.description,
-    this.facebookUrl,
-    this.instagramUrl,
-    this.twitterUrl,
-    this.stadion,
-  });
+  DetailClubModel(
+      {this.idTeam,
+      this.nameTeam,
+      this.badge,
+      this.formedYear,
+      this.description,
+      this.facebookUrl,
+      this.instagramUrl,
+      this.twitterUrl,
+      this.stadion,
+      this.location});
 
   DetailClubModel.fromJson(Map<String, dynamic> json) {
     idTeam = json["idTeam"];
@@ -31,6 +32,7 @@ class DetailClubModel {
     instagramUrl = json["strInstagram"];
     twitterUrl = json["strTwitter"];
     stadion = json["strStadium"];
+    location = json["strLocation"];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,6 +46,7 @@ class DetailClubModel {
     data['strInstagram'] = instagramUrl;
     data['strTwitter'] = twitterUrl;
     data["strStadium"] = stadion;
+    data['strLocation'] = location;
     return data;
   }
 }
