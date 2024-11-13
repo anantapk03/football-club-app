@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -101,119 +104,158 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
   Widget _contentBody(DetailClubModel detailClub,
       List<HistoryEventClubModel> listHistoryEvent, BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: CachedNetworkImage(
-                imageUrl: detailClub.badge!,
-                width: 200,
-                height: 200,
-                placeholder: (context, url) => _buildShimmerImage(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: Text(
-                detailClub.nameTeam!,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            _headerTitle(
-                Icons.info, AppLocalizations.of(context)?.info ?? "Info"),
-            const SizedBox(
-              height: 5,
-            ),
-            Text(
-              "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"}: ${detailClub.formedYear},\n${AppLocalizations.of(context)?.stadionLocation ?? "Location Stadion"} : ${detailClub.stadion}",
-              style: const TextStyle(fontSize: 14),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            _headerTitle(Icons.description,
-                AppLocalizations.of(context)?.description ?? "Description"),
-            const SizedBox(
-              height: 8.0,
-            ),
-            Obx(() {
-              return Text(
-                detailClub.description!,
-                textAlign: TextAlign.justify,
-                maxLines: controller.isFullDetailDescription.value ? null : 3,
-                overflow: controller.isFullDetailDescription.value
-                    ? null
-                    : TextOverflow.ellipsis,
-              );
-            }),
-            const SizedBox(
-              height: 8.0,
-            ),
-            GestureDetector(
-              onTap: () {
-                controller.isFullDetailDescription.value =
-                    !controller.isFullDetailDescription.value;
-              },
-              child: Obx(() {
-                return Center(
-                  child: Text(
-                    controller.isFullDetailDescription.value
-                        ? AppLocalizations.of(context)?.readLess ?? "Read less"
-                        : AppLocalizations.of(context)?.readMore ?? "Read more",
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.w400,
-                    ),
+    return RefreshIndicator(
+      onRefresh: () async => controller.onInit(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: CachedNetworkImage(
+                    imageUrl: detailClub.badge!,
+                    width: 200,
+                    height: 200,
+                    placeholder: (context, url) => _buildShimmerImage(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                   ),
-                );
-              }),
-            ),
-            const SizedBox(height: 8.0),
-            _headerTitle(Icons.cloud_circle,
-                AppLocalizations.of(context)?.socialMedia ?? "Social Media"),
-            const SizedBox(
-              height: 10.0,
-            ),
-            _socialMediaLinks(detailClub),
-            const SizedBox(
-              height: 18,
-            ),
-            _headerTitle(Icons.event,
-                AppLocalizations.of(context)?.historyEvent ?? "History Event"),
-            const SizedBox(
-              height: 12.0,
-            ),
-            Container(
-              // Ubah Expanded menjadi Container
-              // Berikan tinggi yang sesuai
-              height: 200,
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(30)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    detailClub.nameTeam!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
                     ),
-                  ]),
-              child: _historyEventList(listHistoryEvent, context),
-            ),
-            const SizedBox(height: 100),
-          ],
-        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                _headerTitle(
+                    Icons.info, AppLocalizations.of(context)?.info ?? "Info"),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"} : ${detailClub.formedYear},\n${AppLocalizations.of(context)?.stadionLocation ?? "Location Stadion"} : ${detailClub.stadion ?? "Unknown"}",
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                detailClub.stadion != null
+                    ? Container(
+                        height: 200,
+                        child: GoogleMap(
+                          mapType: MapType.hybrid,
+                          initialCameraPosition: CameraPosition(
+                            target: controller.longitude.value == 0.0
+                                ? const LatLng(52.4862, -1.8904)
+                                : LatLng(controller.latitude.value,
+                                    controller.longitude.value),
+                            zoom: 8.4746,
+                          ),
+                          markers: {
+                            Marker(
+                                markerId: MarkerId(
+                                  detailClub.idTeam ?? "",
+                                ),
+                                position: LatLng(controller.latitude.value,
+                                    controller.longitude.value),
+                                infoWindow: InfoWindow(
+                                  title: detailClub.stadion,
+                                ))
+                          },
+                        ),
+                      )
+                    : Container(),
+                const SizedBox(
+                  height: 16,
+                ),
+                _headerTitle(Icons.description,
+                    AppLocalizations.of(context)?.description ?? "Description"),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                Obx(() {
+                  return Text(
+                    detailClub.description!,
+                    textAlign: TextAlign.justify,
+                    maxLines:
+                        controller.isFullDetailDescription.value ? null : 3,
+                    overflow: controller.isFullDetailDescription.value
+                        ? null
+                        : TextOverflow.ellipsis,
+                  );
+                }),
+                const SizedBox(
+                  height: 8.0,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    controller.isFullDetailDescription.value =
+                        !controller.isFullDetailDescription.value;
+                  },
+                  child: Obx(() {
+                    return Center(
+                      child: Text(
+                        controller.isFullDetailDescription.value
+                            ? AppLocalizations.of(context)?.readLess ??
+                                "Read less"
+                            : AppLocalizations.of(context)?.readMore ??
+                                "Read more",
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 8.0),
+                _headerTitle(
+                    Icons.cloud_circle,
+                    AppLocalizations.of(context)?.socialMedia ??
+                        "Social Media"),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                _socialMediaLinks(detailClub),
+                const SizedBox(
+                  height: 18,
+                ),
+                _headerTitle(
+                    Icons.event,
+                    AppLocalizations.of(context)?.historyEvent ??
+                        "History Event"),
+                const SizedBox(
+                  height: 12.0,
+                ),
+                Container(
+                  // Ubah Expanded menjadi Container
+                  // Berikan tinggi yang sesuai
+                  height: 200,
+                  decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(30)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]),
+                  child: _historyEventList(listHistoryEvent, context),
+                ),
+                const SizedBox(height: 100),
+              ],
+            )),
       ),
     );
   }
@@ -459,14 +501,9 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
   String? _convertDate(String? date) {
     if (date == null) return null;
-
     try {
-      // Parsing tanggal dengan format "dd-MM-yyyy"
       DateTime parsedDate = DateFormat('yyyy-MM-dd').parse(date);
-
-      // Mengonversi tanggal ke format "d MMMM yyyy"
       String formattedDate = DateFormat('d MMMM yyyy').format(parsedDate);
-
       return formattedDate;
     } catch (e) {
       return null;

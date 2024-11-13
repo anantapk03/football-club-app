@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
@@ -27,6 +28,8 @@ class DetailClubController extends GetxController {
   DetailClubController(
       this._repository, this._favoriteHelper, this._appDatabase);
   List<HistoryEventClubModel>? listHistoryClub = [];
+  Rx<double> latitude = 0.0.obs;
+  Rx<double> longitude = 0.0.obs;
 
   FavoriteHelper get favoriteHelper => _favoriteHelper;
 
@@ -38,6 +41,7 @@ class DetailClubController extends GetxController {
 
   @override
   void onInit() async {
+    // TODO: implement onInit
     super.onInit();
     idFromArguments.value = Get.arguments ?? "";
     idFromParameters.value = Get.parameters['id'] ?? "";
@@ -51,31 +55,52 @@ class DetailClubController extends GetxController {
     firebaseController();
   }
 
-  void loadDetailClub(String idTeam) {
+  Future<void> loadDetailClub(String idTeam) async {
     detailClubState = DetailClubLoading();
     update();
     _repository.loadDetail(
-        response: ResponseHandler(onSuccess: (listItem) {
-      DetailClubModel? foundItem;
+      response: ResponseHandler(
+        onSuccess: (listItem) async {
+          DetailClubModel? foundItem;
 
-      for (var item in listItem) {
-        if (item.idTeam == idTeam) {
-          foundItem = item;
-          break;
-        }
-      }
+          for (var item in listItem) {
+            if (item.idTeam == idTeam) {
+              foundItem = item;
+              break;
+            }
+          }
 
-      if (foundItem != null) {
-        detailClubState = DetailClubLoadSuccess(foundItem);
-      } else {
-        detailClubState = DetailClubError();
+          if (foundItem != null) {
+            await getLocationTeam(foundItem.location ?? foundItem.stadion);
+            detailClubState = DetailClubLoadSuccess(foundItem);
+          } else {
+            detailClubState = DetailClubError();
+          }
+
+          update();
+        },
+        onFailed: (e, message) {
+          _logger.e(e);
+          AlertModel.showBasic("Error", message);
+          detailClubState = DetailClubError();
+          update();
+        },
+        onDone: () {},
+      ),
+    );
+  }
+
+  Future<void> getLocationTeam(String? address) async {
+    try {
+      List<Location> locations = await locationFromAddress(address ?? "London");
+
+      if (locations.isNotEmpty) {
+        latitude.value = locations[0].latitude;
+        longitude.value = locations[0].longitude;
       }
-    }, onFailed: (e, message) {
-      _logger.e(e);
-      AlertModel.showBasic("Erro", message);
-    }, onDone: () {
-      update();
-    }));
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future<void> loadListHistoryEventClub() async {
@@ -116,14 +141,14 @@ class DetailClubController extends GetxController {
         await _appDatabase.into(_appDatabase.clubTable).insert(
             ClubTableCompanion.insert(
                 idTeam: idTeam,
-                nameTeam: detailClub?.nameTeam ?? "",
-                badge: detailClub?.badge ?? "",
-                formedYear: detailClub?.formedYear ?? "",
-                description: detailClub?.description ?? "",
-                facebookUrl: detailClub?.facebookUrl ?? "",
-                twitterUrl: detailClub?.twitterUrl ?? "",
-                instagramUrl: detailClub?.instagramUrl ?? "",
-                stadion: detailClub?.stadion ?? ""));
+                nameTeam: detailClub.nameTeam ?? "",
+                badge: detailClub.badge ?? "",
+                formedYear: detailClub.formedYear ?? "",
+                description: detailClub.description ?? "",
+                facebookUrl: detailClub.facebookUrl ?? "",
+                twitterUrl: detailClub.twitterUrl ?? "",
+                instagramUrl: detailClub.instagramUrl ?? "",
+                stadion: detailClub.stadion ?? ""));
       }
     }
 
@@ -136,7 +161,6 @@ class DetailClubController extends GetxController {
   }
 
   void firebaseController() {
-    // Handle when onBackground
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
         id.value = message.data['id'];

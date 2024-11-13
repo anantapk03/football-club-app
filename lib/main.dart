@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
@@ -19,11 +20,32 @@ import 'components/util/firebase_notification_util.dart';
 import 'components/util/storage_util.dart';
 import 'firebase_options.dart';
 
+Future<void> _handleLocationPermission() async {
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      // Handle jika izin tetap ditolak atau ditolak secara permanen
+      print("Izin lokasi ditolak.");
+      return;
+    }
+  }
+
+  if (permission == LocationPermission.whileInUse ||
+      permission == LocationPermission.always) {
+    // Izin telah diberikan, lakukan tindakan yang memerlukan lokasi di sini
+
+    print("Izin lokasi diberikan.");
+  }
+}
+
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _dependencyInjection();
+  await _handleLocationPermission();
   await _notificationConfiguration();
   runApp(const MyApp());
 }
