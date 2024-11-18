@@ -19,109 +19,119 @@ class TeamScreen extends GetView<TeamController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          Container(
-            height: 200,
-            decoration: const BoxDecoration(
-              color: Color(0xff5c0751),
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0)),
-            ),
-          ),
-          RefreshIndicator(
-            onRefresh: () async {
-              controller.onInit();
-            },
-            child: SafeArea(
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: _searchBar(context)),
-                  ),
-                  SliverToBoxAdapter(child: Obx(() {
-                    return !controller.isSearchFocused
-                            .value // Memeriksa apakah search bar fokus
-                        ? Container(
-                            child: _buildListLeague(
-                                context)) // Jika tidak fokus, tampilkan list
-                        : Container();
-                  })),
-                  const SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 8.0,
+      body: body(context),
+    );
+  }
+
+  Widget body(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async => controller.onInit(),
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Stack(
+              children: [
+                Obx(() {
+                  return !controller.isSearchFocused.value
+                      ? Container(
+                          height: 250,
+                          decoration: const BoxDecoration(
+                            color: Color(0xff5c0751),
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(10.0),
+                                bottomRight: Radius.circular(10.0)),
+                          ),
+                        )
+                      : Container();
+                }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        Obx(() {
+                          return _searchBar(context);
+                        }),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Obx(() {
+                          return !controller.isSearchFocused.value
+                              ? Container(child: _buildListLeague(context))
+                              : Container();
+                        })
+                      ],
                     ),
                   ),
-                  SliverToBoxAdapter(
-                    child: Obx(() {
-                      return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 12.0),
-                          child: !controller.isSearchFocused
-                                  .value // Memeriksa apakah search bar fokus
-                              ? Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.dataset,
-                                      color: Colors.blue,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(context)?.listTeam ??
-                                          "List Team",
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black),
-                                    ),
-                                  ],
-                                )
-                              : Container());
-                    }),
-                  ),
-                  _bodyListTeam(context),
-                  SliverToBoxAdapter(
-                    child: Obx(() {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: !controller.isSearchFocused.value
-                              ? GestureDetector(
-                                  onTap: () {
-                                    if (controller.isShowMore.value) {
-                                      controller.isShowMore.value = false;
-                                    } else {
-                                      controller.isShowMore.value = true;
-                                    }
-                                  },
-                                  child: Text(
-                                    controller.isShowMore.value
-                                        ? AppLocalizations.of(context)
-                                                ?.showLess ??
-                                            "Show less"
-                                        : AppLocalizations.of(context)
-                                                ?.showMore ??
-                                            "Show more",
-                                    style: const TextStyle(
-                                        color: Colors.blueAccent,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                )
-                              : Container(),
-                        ),
-                      );
-                    }),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
           ),
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 8.0,
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Obx(() {
+              return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 12.0),
+                  child: !controller.isSearchFocused.value
+                      ? Row(
+                          children: [
+                            const Icon(
+                              Icons.dataset,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)?.listTeam ??
+                                  "List Team",
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        )
+                      : Container());
+            }),
+          ),
+          _bodyListTeam(context),
+          SliverToBoxAdapter(
+            child: Obx(() {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: !controller.isSearchFocused.value
+                      ? GestureDetector(
+                          onTap: () {
+                            if (controller.isShowMore.value) {
+                              controller.isShowMore.value = false;
+                            } else {
+                              controller.isShowMore.value = true;
+                            }
+                          },
+                          child: Text(
+                            controller.isShowMore.value
+                                ? AppLocalizations.of(context)?.showLess ??
+                                    "Show less"
+                                : AppLocalizations.of(context)?.showMore ??
+                                    "Show more",
+                            style: const TextStyle(
+                                color: Colors.blueAccent,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        )
+                      : Container(),
+                ),
+              );
+            }),
+          )
         ],
       ),
     );
@@ -131,8 +141,8 @@ class TeamScreen extends GetView<TeamController> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: controller.isSearchFocused.value ? Colors.black : Colors.white,
         ),
         focusNode: controller.isFocusNodeSearch, // Gunakan tanpa .value
         onChanged: (query) => controller.searchTeams(query),

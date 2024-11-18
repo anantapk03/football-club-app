@@ -150,7 +150,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
                   height: 5,
                 ),
                 detailClub.stadion != null
-                    ? Container(
+                    ? SizedBox(
                         height: 200,
                         child: GoogleMap(
                           mapType: MapType.hybrid,
