@@ -15,7 +15,6 @@ import '../model/detail_club_model.dart';
 import '../model/history_event_club_model.dart';
 import 'detail_club_controller.dart';
 import 'detail_club_state.dart';
-import 'history_event_club_state.dart';
 
 class DetailClubScreen extends GetView<DetailClubController> {
   const DetailClubScreen({super.key});
@@ -37,10 +36,107 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
+  Widget _sliverAppBar() {
+    return SliverAppBar();
+  }
+
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
       title: Text(AppLocalizations.of(context)?.detailClub ?? "Detail Club"),
       centerTitle: true,
+    );
+  }
+
+  Widget detailClubContent(DetailClubModel detailClub, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: CachedNetworkImage(
+            imageUrl: detailClub.badge!,
+            width: 200,
+            height: 200,
+            placeholder: (context, url) => _buildShimmerImage(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            detailClub.nameTeam!,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        _headerTitle(Icons.info, AppLocalizations.of(context)?.info ?? "Info"),
+        const SizedBox(
+          height: 5,
+        ),
+        Text(
+          "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"} : ${detailClub.formedYear},\n${AppLocalizations.of(context)?.stadionLocation ?? "Location Stadion"} : ${detailClub.stadion ?? "Unknown"}",
+          style: const TextStyle(fontSize: 14),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        _googleMaps(detailClub),
+        const SizedBox(
+          height: 16,
+        ),
+        _headerTitle(Icons.description,
+            AppLocalizations.of(context)?.description ?? "Description"),
+        const SizedBox(
+          height: 8.0,
+        ),
+        Obx(() {
+          return Text(
+            detailClub.description!,
+            textAlign: TextAlign.justify,
+            maxLines: controller.isFullDetailDescription.value ? null : 3,
+            overflow: controller.isFullDetailDescription.value
+                ? null
+                : TextOverflow.ellipsis,
+          );
+        }),
+        const SizedBox(
+          height: 8.0,
+        ),
+        GestureDetector(
+          onTap: () {
+            controller.isFullDetailDescription.value =
+                !controller.isFullDetailDescription.value;
+          },
+          child: Obx(() {
+            return Center(
+              child: Text(
+                controller.isFullDetailDescription.value
+                    ? AppLocalizations.of(context)?.readLess ?? "Read less"
+                    : AppLocalizations.of(context)?.readMore ?? "Read more",
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 8.0),
+        _headerTitle(Icons.cloud_circle,
+            AppLocalizations.of(context)?.socialMedia ?? "Social Media"),
+        const SizedBox(
+          height: 10.0,
+        ),
+        _socialMediaLinks(detailClub),
+        const SizedBox(
+          height: 18,
+        ),
+      ],
     );
   }
 
@@ -54,25 +150,12 @@ class DetailClubScreen extends GetView<DetailClubController> {
         }
 
         if (state is DetailClubLoadSuccess) {
-          final eventState = ctrl.historyEventClubState;
-          if (eventState is HistoryEventClubLoading) {
-            return _loading();
-          }
-
-          if (eventState is HistoryEventClubError) {
-            List<HistoryEventClubModel> empty = [];
-            return _contentBody(state.detail, empty, context);
-          }
-
-          if (eventState is HistoryEventClubLoadSuccess) {
-            return _contentBody(state.detail, eventState.listHistory, context);
-          }
+          return _contentBody(state.detail, context);
         }
 
         if (state is DetailClubError) {
           return _error(context);
         }
-
         return Container();
       },
     );
@@ -102,162 +185,215 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
-  Widget _contentBody(DetailClubModel detailClub,
-      List<HistoryEventClubModel> listHistoryEvent, BuildContext context) {
+  Widget _contentBody(DetailClubModel detailClub, BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async => controller.onInit(),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-        child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: CachedNetworkImage(
-                    imageUrl: detailClub.badge!,
-                    width: 200,
-                    height: 200,
-                    placeholder: (context, url) => _buildShimmerImage(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Text(
-                    detailClub.nameTeam!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                _headerTitle(
-                    Icons.info, AppLocalizations.of(context)?.info ?? "Info"),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"} : ${detailClub.formedYear},\n${AppLocalizations.of(context)?.stadionLocation ?? "Location Stadion"} : ${detailClub.stadion ?? "Unknown"}",
-                  style: const TextStyle(fontSize: 14),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                detailClub.stadion != null
-                    ? SizedBox(
-                        height: 200,
-                        child: GoogleMap(
-                          mapType: MapType.hybrid,
-                          initialCameraPosition: CameraPosition(
-                            target: controller.longitude.value == 0.0
-                                ? const LatLng(52.4862, -1.8904)
-                                : LatLng(controller.latitude.value,
-                                    controller.longitude.value),
-                            zoom: 8.4746,
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          children: [
+            _headerDetailClub(detailClub, context),
+            const SizedBox(
+              height: 18,
+            ),
+            DefaultTabController(
+                initialIndex: 0,
+                length: 2,
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 4,
+                            offset:
+                                Offset(0, 1.0), // changes position of shadow
                           ),
-                          markers: {
-                            Marker(
-                                markerId: MarkerId(
-                                  detailClub.idTeam ?? "",
-                                ),
-                                position: LatLng(controller.latitude.value,
-                                    controller.longitude.value),
-                                infoWindow: InfoWindow(
-                                  title: detailClub.stadion,
-                                ))
-                          },
-                        ),
-                      )
-                    : Container(),
-                const SizedBox(
-                  height: 16,
-                ),
-                _headerTitle(Icons.description,
-                    AppLocalizations.of(context)?.description ?? "Description"),
-                const SizedBox(
-                  height: 8.0,
-                ),
-                Obx(() {
-                  return Text(
-                    detailClub.description!,
-                    textAlign: TextAlign.justify,
-                    maxLines:
-                        controller.isFullDetailDescription.value ? null : 3,
-                    overflow: controller.isFullDetailDescription.value
-                        ? null
-                        : TextOverflow.ellipsis,
-                  );
-                }),
-                const SizedBox(
-                  height: 8.0,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    controller.isFullDetailDescription.value =
-                        !controller.isFullDetailDescription.value;
-                  },
-                  child: Obx(() {
-                    return Center(
-                      child: Text(
-                        controller.isFullDetailDescription.value
-                            ? AppLocalizations.of(context)?.readLess ??
-                                "Read less"
-                            : AppLocalizations.of(context)?.readMore ??
-                                "Read more",
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        ],
                       ),
-                    );
-                  }),
-                ),
-                const SizedBox(height: 8.0),
-                _headerTitle(
-                    Icons.cloud_circle,
-                    AppLocalizations.of(context)?.socialMedia ??
-                        "Social Media"),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                _socialMediaLinks(detailClub),
-                const SizedBox(
-                  height: 18,
-                ),
-                _headerTitle(
-                    Icons.event,
-                    AppLocalizations.of(context)?.historyEvent ??
-                        "History Event"),
-                const SizedBox(
-                  height: 12.0,
-                ),
-                Container(
-                  // Ubah Expanded menjadi Container
-                  // Berikan tinggi yang sesuai
-                  height: 200,
-                  decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(30)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]),
-                  child: _historyEventList(listHistoryEvent, context),
-                ),
-                const SizedBox(height: 100),
-              ],
-            )),
+                      child: TabBar(
+                        labelPadding: const EdgeInsets.all(0),
+                        onTap: (int index) => controller.onItemTapped(index),
+                        indicatorColor: const Color(0xff5c0751),
+                        dividerColor: Colors.transparent,
+                        tabs: [
+                          Obx(() {
+                            return Tab(
+                              height: 59,
+                              child: _tab(
+                                  active: controller.selectedItem.value == 0,
+                                  text: "History Event"),
+                            );
+                          }),
+                          Obx(() {
+                            return Tab(
+                              height: 59,
+                              child: _tab(
+                                  active: controller.selectedItem.value == 1,
+                                  text: "History Jersey"),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                        height: 300,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TabBarView(children: controller.widgetTabs),
+                        ))
+                  ],
+                )),
+            const SizedBox(height: 100),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _headerDetailClub(DetailClubModel detailClub, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CachedNetworkImage(
+                imageUrl: detailClub.badge!,
+                width: 90,
+                height: 90,
+                placeholder: (context, url) => _buildShimmerImage(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+              const SizedBox(
+                width: 16.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      detailClub.nameTeam ?? "",
+                      softWrap: true,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                      ),
+                      textAlign: TextAlign.start, // Menghindari teks tidak rapi
+                    ),
+                    const SizedBox(
+                      height: 4.0,
+                    ),
+                    Text(
+                      "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"} : ${detailClub.formedYear}",
+                    ),
+                    const SizedBox(
+                      height: 4.0,
+                    ),
+                    GestureDetector(
+                        onTap: () async {
+                          if (detailClub.stadion != null) {
+                            await showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                clipBehavior: Clip.antiAlias,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                builder: (ctx) {
+                                  return FractionallySizedBox(
+                                    heightFactor:
+                                        0.35, // Menggunakan 90% dari tinggi layar
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: _googleMaps(detailClub),
+                                    ),
+                                  );
+                                });
+                          }
+                        },
+                        child: Text(
+                          detailClub.stadion ?? "Unknown",
+                          style: TextStyle(
+                              color: detailClub.stadion == null
+                                  ? Colors.black
+                                  : Colors.blue),
+                        ))
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 14.0,
+          ),
+          Obx(() {
+            return GestureDetector(
+              onTap: () {
+                controller.isFullDetailDescription.value =
+                    !controller.isFullDetailDescription.value;
+              },
+              child: Text(
+                detailClub.description ?? "",
+                textAlign: TextAlign.justify,
+                maxLines: controller.isFullDetailDescription.value ? null : 2,
+                overflow: controller.isFullDetailDescription.value
+                    ? null
+                    : TextOverflow.ellipsis,
+              ),
+            );
+          }),
+          const SizedBox(
+            height: 8.0,
+          ),
+          _socialMediaLinks(detailClub)
+        ],
+      ),
+    );
+  }
+
+  Widget _tab({bool active = false, String text = ''}) {
+    return Center(
+      child: Text(text,
+          style: TextStyle(
+            color: !active ? Colors.grey : Colors.black,
+          )),
+    );
+  }
+
+  Widget _googleMaps(DetailClubModel detailClub) {
+    return detailClub.stadion != null
+        ? SizedBox(
+            height: 200,
+            child: GoogleMap(
+              mapType: MapType.hybrid,
+              initialCameraPosition: CameraPosition(
+                target: controller.longitude.value == 0.0
+                    ? const LatLng(52.4862, -1.8904)
+                    : LatLng(
+                        controller.latitude.value, controller.longitude.value),
+                zoom: 8.4746,
+              ),
+              markers: {
+                Marker(
+                    markerId: MarkerId(
+                      detailClub.idTeam ?? "",
+                    ),
+                    position: LatLng(
+                        controller.latitude.value, controller.longitude.value),
+                    infoWindow: InfoWindow(
+                      title: detailClub.stadion,
+                    ))
+              },
+            ),
+          )
+        : Container();
   }
 
   Widget _headerTitle(IconData icon, String label) {
@@ -315,7 +451,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
           Logger().i(e.toString());
         }
       },
-      child: Icon(icon, color: color, size: 30),
+      child: Icon(icon, color: color, size: 20),
     );
   }
 
@@ -391,6 +527,8 @@ class DetailClubScreen extends GetView<DetailClubController> {
 
   Widget _historyEventItem(HistoryEventClubModel? data, BuildContext context) {
     var date = _convertDate(data?.dateEvent ?? "2003-09-05");
+    var initialAwayTeam = _getInitials(data?.strAwayTeam);
+    var initialTeam = _getInitials(data?.strHomeTeam);
     return Container(
       width: MediaQuery.sizeOf(context).width - 40,
       padding: const EdgeInsets.all(16.0),
@@ -439,7 +577,7 @@ class DetailClubScreen extends GetView<DetailClubController> {
                   const SizedBox(
                     height: 8.0,
                   ),
-                  Text(data?.strHomeTeam ?? "Arema",
+                  Text(initialTeam,
                       style: const TextStyle(
                           fontWeight: FontWeight.w400, fontSize: 12)),
                 ],
@@ -474,9 +612,12 @@ class DetailClubScreen extends GetView<DetailClubController> {
                     height: 8,
                   ),
                   Text(
-                    data?.strAwayTeam ?? "Persija",
+                    initialAwayTeam,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w400, fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12),
                   ),
                 ],
               ),
@@ -488,7 +629,11 @@ class DetailClubScreen extends GetView<DetailClubController> {
           // Menambahkan tampilan skor hasil pertandingan
           Text(
             "${data?.intHomeScore ?? 0} - ${data?.intAwayScore ?? 0}",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(
             height: 12,
@@ -508,6 +653,22 @@ class DetailClubScreen extends GetView<DetailClubController> {
     } catch (e) {
       return null;
     }
+  }
+
+  String _getInitials(String? data) {
+    // Membagi string menjadi kata-kata dan mengambil huruf pertama dari setiap kata
+    String name = data ?? "Football Club";
+    List<String> words = name.split(' ');
+    String initials = '';
+
+    for (var word in words) {
+      if (word.isNotEmpty) {
+        initials += word[0]
+            .toUpperCase(); // Mengambil huruf pertama dan mengubahnya menjadi huruf kapital
+      }
+    }
+    print("Initials = $initials");
+    return initials;
   }
 
   Widget _historyEventList(

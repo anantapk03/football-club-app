@@ -20,4 +20,12 @@ class DetailclubDatasource extends BaseDioDataSource {
 
     return get<String>(path, queryParameters: queryParameters).load();
   }
+
+  Future<String> getEquipmentHistory(String idTeam) {
+    String path = 'lookupequipment.php';
+
+    Map<String, dynamic> queryParameters = {'id': idTeam};
+
+    return get<String>(path, queryParameters: queryParameters).load();
+  }
 }

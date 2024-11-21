@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -15,6 +16,8 @@ import '../model/detail_club_model.dart';
 import '../model/history_event_club_model.dart';
 import '../repository/detailclub_repository.dart';
 import 'detail_club_state.dart';
+import 'equipments/equipment_screen.dart';
+import 'history_event/history_event_screen.dart';
 import 'history_event_club_state.dart';
 
 class DetailClubController extends GetxController {
@@ -30,6 +33,7 @@ class DetailClubController extends GetxController {
   List<HistoryEventClubModel>? listHistoryClub = [];
   Rx<double> latitude = 0.0.obs;
   Rx<double> longitude = 0.0.obs;
+  Rx<int> selectedItem = 0.obs;
 
   FavoriteHelper get favoriteHelper => _favoriteHelper;
 
@@ -38,21 +42,30 @@ class DetailClubController extends GetxController {
   final id = "".obs;
   final idFromParameters = "".obs;
   final idFromArguments = "".obs;
+  late List<Widget> widgetTabs = [];
 
   @override
   void onInit() async {
-    // TODO: implement onInit
     super.onInit();
     idFromArguments.value = Get.arguments ?? "";
     idFromParameters.value = Get.parameters['id'] ?? "";
-    if (idFromParameters.value.isEmpty) {
-      id.value = idFromArguments.value;
-    } else {
-      id.value = idFromParameters.value;
+    if (id.value.isEmpty) {
+      if (idFromParameters.value.isEmpty) {
+        id.value = idFromArguments.value;
+      } else {
+        id.value = idFromParameters.value;
+      }
     }
-    loadDetailClub(id.value);
-    await loadListHistoryEventClub();
+    await loadDetailClub(id.value);
     firebaseController();
+    widgetTabs = [
+      HistoryEventScreen(
+        id: id.value,
+      ),
+      EquipmentScreen(
+        idTeam: id.value,
+      )
+    ];
   }
 
   Future<void> loadDetailClub(String idTeam) async {
@@ -167,5 +180,9 @@ class DetailClubController extends GetxController {
         loadDetailClub(id.value);
       }
     });
+  }
+
+  void onItemTapped(int value) {
+    selectedItem.value = value;
   }
 }
