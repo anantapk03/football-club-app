@@ -6,6 +6,7 @@ import '../../../components/base/base_repository.dart';
 import '../../../components/util/state.dart';
 import '../model/detail_club_model.dart';
 import '../model/history_event_club_model.dart';
+import '../model/list_equipment_model.dart';
 import 'detailclub_datasource.dart';
 
 class DetailclubRepository extends BaseRepository {
@@ -53,6 +54,23 @@ class DetailclubRepository extends BaseRepository {
     } catch (e) {
       _logger.e(e);
       response.onFailed(e, e.toString());
+      response.onDone.call();
+    }
+  }
+
+  Future<void> loadHistoryEquipment(
+      {required ResponseHandler<ListEquipmentModel> response,
+      String? idTeam}) async {
+    try {
+      final String apiResponse =
+          await _datasource.getEquipmentHistory(idTeam ?? "139350");
+      ListEquipmentModel? listEquipmentModel =
+          ListEquipmentModel.fromJson(json.decode(apiResponse));
+      response.onSuccess(listEquipmentModel);
+    } catch (e) {
+      _logger.e(e);
+      response.onFailed(e, e.toString());
+    } finally {
       response.onDone.call();
     }
   }

@@ -1,0 +1,45 @@
+import 'package:get/get.dart';
+import 'package:logger/logger.dart';
+
+import '../../../../components/util/state.dart';
+import '../../repository/detailclub_repository.dart';
+import 'equipment_state.dart';
+
+class EquipmentController extends GetxController {
+  final DetailclubRepository _repository;
+  EquipmentState equipmentState = EquipmentIdle();
+  final _logger = Logger();
+  EquipmentController(this._repository);
+
+  final id = "".obs;
+
+  Future<void> loadHistoryEquipment() async {
+    try {
+      equipmentState = EquipmentLoading();
+      update();
+      await _repository.loadHistoryEquipment(
+        response: ResponseHandler(
+          onSuccess: (listEquipment) async {
+            if (listEquipment.equipment != null &&
+                listEquipment.equipment!.isNotEmpty) {
+              equipmentState = EquipmentLoadSuccess(listEquipment);
+              _logger.i("Sukses change State");
+            } else {
+              equipmentState = EquipmentError();
+            }
+          },
+          onFailed: (e, message) {
+            equipmentState = EquipmentError();
+          },
+          onDone: () {
+            update();
+          },
+        ),
+        idTeam: id.value,
+      );
+    } catch (e) {
+      equipmentState = EquipmentError();
+      update();
+    }
+  }
+}

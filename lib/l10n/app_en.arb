@@ -24,6 +24,8 @@
     "yearEstablished": "Year Established",
     "stadionLocation": "Location Stadion",
     "failedToLoadClubDetails" : "Failed to load club details",
+    "historyJersey": "History Jersey",
+    "aboutTeam" : "About Club",
 
     "language": "Language",
     "greating": "Hallo",
