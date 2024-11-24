@@ -42,8 +42,8 @@ class DetailClubController extends GetxController {
   final id = "".obs;
   final idFromParameters = "".obs;
   final idFromArguments = "".obs;
-  late List<Widget> widgetTabs = [];
-
+  late List<Widget> widgetTabs;
+  late DetailClubModel detailClub;
   @override
   void onInit() async {
     super.onInit();
@@ -57,15 +57,17 @@ class DetailClubController extends GetxController {
       }
     }
     await loadDetailClub(id.value);
-    firebaseController();
     widgetTabs = [
       HistoryEventScreen(
         id: id.value,
+        // detailClub: detailClub,
       ),
       EquipmentScreen(
         idTeam: id.value,
       )
     ];
+    firebaseController();
+    selectedItem.value = 0;
   }
 
   Future<void> loadDetailClub(String idTeam) async {
@@ -86,6 +88,7 @@ class DetailClubController extends GetxController {
           if (foundItem != null) {
             await getLocationTeam(foundItem.location ?? foundItem.stadion);
             detailClubState = DetailClubLoadSuccess(foundItem);
+            detailClub = foundItem;
           } else {
             detailClubState = DetailClubError();
           }
@@ -114,25 +117,6 @@ class DetailClubController extends GetxController {
     } catch (e) {
       print('Error: $e');
     }
-  }
-
-  Future<void> loadListHistoryEventClub() async {
-    historyEventClubState = HistoryEventClubLoading();
-    update();
-
-    _repository.loadHistoryEventClub(
-        response: ResponseHandler(onSuccess: (listHistoryEventClub) {
-          historyEventClubState =
-              HistoryEventClubLoadSuccess(listHistoryEventClub);
-          listHistoryClub = listHistoryEventClub;
-        }, onFailed: (e, message) {
-          _logger.e(e);
-          AlertModel.showBasic("Error", message);
-          historyEventClubState = HistoryEventClubError();
-        }, onDone: () {
-          update();
-        }),
-        idTeam: id.value);
   }
 
   Future<void> toggleFavorite(String idTeam) async {

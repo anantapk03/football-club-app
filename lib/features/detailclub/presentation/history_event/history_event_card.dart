@@ -15,9 +15,8 @@ class HistoryEventCard extends StatelessWidget {
     var initialAwayTeam = _getInitials(clubModel?.strAwayTeam);
     var initialTeam = _getInitials(clubModel?.strHomeTeam);
     return Container(
-      width: MediaQuery.sizeOf(context).width,
+      width: MediaQuery.sizeOf(context).width - 32,
       padding: const EdgeInsets.all(16.0),
-      height: 200,
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -104,7 +103,6 @@ class HistoryEventCard extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          // Menambahkan tampilan skor hasil pertandingan
           Text(
             "${clubModel?.intHomeScore ?? 0} - ${clubModel?.intAwayScore ?? 0}",
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -130,18 +128,15 @@ class HistoryEventCard extends StatelessWidget {
   }
 
   String _getInitials(String? data) {
-    // Membagi string menjadi kata-kata dan mengambil huruf pertama dari setiap kata
     String name = data ?? "Football Club";
     List<String> words = name.split(' ');
     String initials = '';
 
     for (var word in words) {
       if (word.isNotEmpty) {
-        initials += word[0]
-            .toUpperCase(); // Mengambil huruf pertama dan mengubahnya menjadi huruf kapital
+        initials += word[0].toUpperCase();
       }
     }
-    print("Initials = $initials");
     return initials;
   }
 }
