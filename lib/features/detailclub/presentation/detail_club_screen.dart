@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 import '../../../components/widget/app_shimmer.dart';
-import '../../../components/widget/google_map_widget.dart';
+import '../../../components/widget/header_detail_club_widget.dart';
 import '../../../components/widget/shimmer/detail_shimmer.dart';
 import '../model/detail_club_model.dart';
 import 'detail_club_controller.dart';
@@ -52,66 +51,73 @@ class DetailClubScreen extends GetView<DetailClubController> {
     return DefaultTabController(
       length: 2,
       child: NestedScrollView(
-        headerSliverBuilder: (context, value) => [
-          SliverAppBar(
-            expandedHeight: MediaQuery.sizeOf(context).width / 2,
-            pinned: true,
-            snap: false,
-            floating: false,
-            title: Text(detailClub.nameTeam ?? ""),
-            centerTitle: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _headerDetailClub(detailClub, context),
-            ),
-            bottom: TabBar(
-              labelPadding: const EdgeInsets.all(0),
-              onTap: (int index) {
-                controller.onItemTapped(index);
-                controller.selectedItem.value = index;
-              },
-              indicatorColor: const Color(0xff5c0751),
-              dividerColor: Colors.transparent,
-              tabs: [
-                Obx(() {
-                  return Tab(
-                    height: 59,
-                    child: _tab(
-                        active: controller.selectedItem.value == 0,
-                        text:
-                            AppLocalizations.of(context)?.aboutTeam ?? "About"),
-                  );
-                }),
-                Obx(() {
-                  return Tab(
-                    height: 59,
-                    child: _tab(
-                        active: controller.selectedItem.value == 1,
-                        text: AppLocalizations.of(context)?.historyJersey ??
-                            "History Jersey"),
-                  );
-                }),
-              ],
-            ),
-          )
-        ],
-        body: RefreshIndicator(
-          onRefresh: () async => controller.onInit(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: <Widget>[
-                HistoryEventScreen(
-                  id: controller.id.value,
-                  detailClub: detailClub,
-                ),
-                EquipmentScreen(
-                  idTeam: controller.id.value,
-                )
-              ],
-            ),
+        headerSliverBuilder: (context, value) =>
+            [_sliverAppBar(context, detailClub)],
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: <Widget>[
+              HistoryEventScreen(
+                id: controller.id.value,
+                detailClub: detailClub,
+              ),
+              EquipmentScreen(
+                idTeam: controller.id.value,
+              )
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _sliverAppBar(BuildContext context, DetailClubModel detailClub) {
+    return SliverAppBar(
+      expandedHeight: MediaQuery.sizeOf(context).width / 1.9,
+      pinned: true,
+      snap: false,
+      floating: false,
+      title: Text(
+        detailClub.nameTeam ?? "",
+        style: const TextStyle(
+            fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
+      ),
+      centerTitle: true,
+      flexibleSpace: FlexibleSpaceBar(
+        background: HeaderDetailClubWidget(
+          detailClub: detailClub,
+          latitude: controller.latitude.value,
+          longitude: controller.longitude.value,
+        ),
+      ),
+      bottom: TabBar(
+        labelPadding: const EdgeInsets.all(0),
+        onTap: (int index) {
+          controller.onItemTapped(index);
+          controller.selectedItem.value = index;
+        },
+        indicatorColor: const Color(0xff5c0751),
+        dividerColor: Colors.transparent,
+        tabs: [
+          Obx(() {
+            return Tab(
+              height: 50,
+              child: _tab(
+                  active: controller.selectedItem.value == 0,
+                  text: AppLocalizations.of(context)?.aboutTeam ?? "About"),
+            );
+          }),
+          Obx(() {
+            return Tab(
+              height: 50,
+              child: _tab(
+                  active: controller.selectedItem.value == 1,
+                  text: AppLocalizations.of(context)?.historyJersey ??
+                      "History Jersey"),
+            );
+          }),
+        ],
       ),
     );
   }
@@ -147,111 +153,16 @@ class DetailClubScreen extends GetView<DetailClubController> {
     );
   }
 
-  Widget _headerDetailClub(DetailClubModel detailClub, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.sizeOf(context).width / 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CachedNetworkImage(
-                imageUrl: detailClub.badge!,
-                width: 90,
-                height: 90,
-                placeholder: (context, url) => _buildShimmerImage(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-              const SizedBox(
-                width: 16.0,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      detailClub.nameTeam ?? "",
-                      softWrap: true,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
-                      textAlign: TextAlign.start, // Menghindari teks tidak rapi
-                    ),
-                    const SizedBox(
-                      height: 4.0,
-                    ),
-                    Text(
-                      "${AppLocalizations.of(context)?.yearEstablished ?? "Year Established"} : ${detailClub.formedYear}",
-                    ),
-                    const SizedBox(
-                      height: 4.0,
-                    ),
-                    GestureDetector(
-                        onTap: () async {
-                          if (detailClub.stadion != null) {
-                            await showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                clipBehavior: Clip.antiAlias,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
-                                  ),
-                                ),
-                                builder: (ctx) {
-                                  return FractionallySizedBox(
-                                    heightFactor:
-                                        0.35, // Menggunakan 90% dari tinggi layar
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: _googleMaps(detailClub),
-                                    ),
-                                  );
-                                });
-                          }
-                        },
-                        child: Text(
-                          detailClub.stadion ?? "Unknown",
-                          style: TextStyle(
-                              color: detailClub.stadion == null
-                                  ? Colors.black
-                                  : Colors.blue),
-                        ))
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+  Widget _tab({bool active = false, String text = ''}) {
+    return Container(
+      color: Colors.white,
+      child: Center(
+        child: Text(text,
+            style: TextStyle(
+              color: !active ? Colors.grey : Colors.black,
+            )),
       ),
     );
-  }
-
-  Widget _tab({bool active = false, String text = ''}) {
-    return Center(
-      child: Text(text,
-          style: TextStyle(
-            color: !active ? Colors.grey : Colors.black,
-          )),
-    );
-  }
-
-  Widget _googleMaps(DetailClubModel detailClub) {
-    return detailClub.stadion != null
-        ? SizedBox(
-            height: 200,
-            child: GoogleMapWidget(
-              longitude: controller.longitude.value,
-              latitude: controller.latitude.value,
-              detailClubModel: detailClub,
-            ),
-          )
-        : Container();
   }
 
   Widget _buildFavoriteButton(String idTeam) {
@@ -290,15 +201,6 @@ class DetailClubScreen extends GetView<DetailClubController> {
         ),
       ),
     );
-  }
-
-  Widget _buildShimmerImage() {
-    return AppShimmer(
-        child: Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.white,
-    ));
   }
 
   Widget _floatingButtonShimmer() {

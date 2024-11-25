@@ -20,13 +20,7 @@ class EquipmentController extends GetxController {
       await _repository.loadHistoryEquipment(
         response: ResponseHandler(
           onSuccess: (listEquipment) async {
-            if (listEquipment.equipment != null &&
-                listEquipment.equipment!.isNotEmpty) {
-              equipmentState = EquipmentLoadSuccess(listEquipment);
-              _logger.i("Sukses change State");
-            } else {
-              equipmentState = EquipmentError();
-            }
+            equipmentState = EquipmentLoadSuccess(listEquipment);
           },
           onFailed: (e, message) {
             equipmentState = EquipmentError();

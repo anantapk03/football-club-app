@@ -1,10 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
-import '../../../components/config/app_route.dart';
-import '../../../components/widget/app_shimmer.dart';
+import '../../../components/widget/header_title_widget.dart';
+import '../../../components/widget/item_club_widget.dart';
+import '../../../components/widget/league_carousel_item.dart';
+import '../../../components/widget/shimmer/item_list_league_shimmer_widget.dart';
 import '../../../components/widget/shimmer/list_club_shimmer.dart';
 import '../model/league_item_model.dart';
 import '../model/team_model.dart';
@@ -18,55 +19,17 @@ class TeamScreen extends GetView<TeamController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: body(context),
+      // backgroundColor: Colors.white,
+      body: _body(context),
     );
   }
 
-  Widget body(BuildContext context) {
+  Widget _body(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async => controller.onInit(),
       child: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(
-            child: Stack(
-              children: [
-                Obx(() {
-                  return !controller.isSearchFocused.value
-                      ? Container(
-                          height: 250,
-                          decoration: const BoxDecoration(
-                            color: Color(0xff5c0751),
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(10.0),
-                                bottomRight: Radius.circular(10.0)),
-                          ),
-                        )
-                      : Container();
-                }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: SafeArea(
-                    child: Column(
-                      children: [
-                        Obx(() {
-                          return _searchBar(context);
-                        }),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Obx(() {
-                          return !controller.isSearchFocused.value
-                              ? Container(child: _buildListLeague(context))
-                              : Container();
-                        })
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+          SliverToBoxAdapter(child: _headerPage(context)),
           const SliverToBoxAdapter(
             child: SizedBox(
               height: 8.0,
@@ -78,24 +41,10 @@ class TeamScreen extends GetView<TeamController> {
                   padding: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 12.0),
                   child: !controller.isSearchFocused.value
-                      ? Row(
-                          children: [
-                            const Icon(
-                              Icons.dataset,
-                              color: Colors.blue,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              AppLocalizations.of(context)?.listTeam ??
-                                  "List Team",
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black),
-                            ),
-                          ],
+                      ? HeaderTitleWidget(
+                          icon: Icons.dataset,
+                          label: AppLocalizations.of(context)?.listTeam ??
+                              "List Team",
                         )
                       : Container());
             }),
@@ -103,36 +52,78 @@ class TeamScreen extends GetView<TeamController> {
           _bodyListTeam(context),
           SliverToBoxAdapter(
             child: Obx(() {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: !controller.isSearchFocused.value
-                      ? GestureDetector(
-                          onTap: () {
-                            if (controller.isShowMore.value) {
-                              controller.isShowMore.value = false;
-                            } else {
-                              controller.isShowMore.value = true;
-                            }
-                          },
-                          child: Text(
-                            controller.isShowMore.value
-                                ? AppLocalizations.of(context)?.showLess ??
-                                    "Show less"
-                                : AppLocalizations.of(context)?.showMore ??
-                                    "Show more",
-                            style: const TextStyle(
-                                color: Colors.blueAccent,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        )
-                      : Container(),
-                ),
-              );
+              return _showMoreWidgetTeam(context);
             }),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _headerPage(BuildContext context) {
+    return Stack(
+      children: [
+        Obx(() {
+          return !controller.isSearchFocused.value
+              ? Container(
+                  height: 250,
+                  decoration: const BoxDecoration(
+                    color: Color(0xff5c0751),
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10.0),
+                        bottomRight: Radius.circular(10.0)),
+                  ),
+                )
+              : Container();
+        }),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Obx(() {
+                  return _searchBar(context);
+                }),
+                const SizedBox(
+                  height: 8,
+                ),
+                Obx(() {
+                  return !controller.isSearchFocused.value
+                      ? Container(child: _buildListLeague(context))
+                      : Container();
+                })
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _showMoreWidgetTeam(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: !controller.isSearchFocused.value
+            ? GestureDetector(
+                onTap: () {
+                  if (controller.isShowMore.value) {
+                    controller.isShowMore.value = false;
+                  } else {
+                    controller.isShowMore.value = true;
+                  }
+                },
+                child: Text(
+                  controller.isShowMore.value
+                      ? AppLocalizations.of(context)?.showLess ?? "Show less"
+                      : AppLocalizations.of(context)?.showMore ?? "Show more",
+                  style: const TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                ),
+              )
+            : Container(),
       ),
     );
   }
@@ -190,7 +181,7 @@ class TeamScreen extends GetView<TeamController> {
         padding: const EdgeInsets.all(8.0),
         sliver: SliverGrid(
           delegate: SliverChildBuilderDelegate((context, index) {
-            return _itemTeam(listData[index]);
+            return ItemClubWidget(team: listData[index]);
           },
               childCount: controller.isShowMore.value
                   ? listData.length
@@ -208,61 +199,6 @@ class TeamScreen extends GetView<TeamController> {
     });
   }
 
-  Widget _carouselItemCustom(
-      BuildContext context, LeagueItemModel? itemLeague) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-        width: double.infinity,
-        height: 168,
-        decoration: BoxDecoration(
-            color: Colors.black12,
-            borderRadius: BorderRadius.circular(10.0),
-            image: DecorationImage(
-                image: NetworkImage(
-                    itemLeague?.strLogo ?? itemLeague!.strBadge ?? ""),
-                fit: BoxFit.contain)),
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  gradient: LinearGradient(
-                      begin: Alignment.center,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.1),
-                        Colors.black,
-                      ])),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 18.0, horizontal: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    itemLeague?.strLeague ?? "",
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
-                    maxLines: 1, // Ensures it only takes one line
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _carouselBuilder(
       List<LeagueItemModel>? listLeague, BuildContext context) {
     return SizedBox(
@@ -275,7 +211,7 @@ class TeamScreen extends GetView<TeamController> {
             itemExtent: MediaQuery.sizeOf(context).width,
             children: List.generate(listLeague?.length ?? 0, (int index) {
               var dataLeagueItem = listLeague?[index];
-              return _carouselItemCustom(context, dataLeagueItem);
+              return LeagueCarouselItem(itemLeague: dataLeagueItem);
             })),
       ),
     );
@@ -283,14 +219,14 @@ class TeamScreen extends GetView<TeamController> {
 
   Widget _buildListLeague(BuildContext context) {
     return GetBuilder<TeamController>(builder: (ctrl) {
-      final state = controller.listLeagueState;
+      final state = ctrl.listLeagueState;
 
       if (state is ListLeagueError) {
         return Container();
       }
 
       if (state is ListLeagueLoading) {
-        return _buildShimmerCarousel();
+        return const ItemListLeagueShimmerWidget();
       }
 
       if (state is LisLeagueLoadSuccess) {
@@ -323,81 +259,5 @@ class TeamScreen extends GetView<TeamController> {
         ],
       ),
     );
-  }
-
-  Widget _itemTeam(TeamModel team) {
-    return GestureDetector(
-      onTap: () {
-        Get.toNamed(AppRoute.detail, arguments: team.idTeam);
-      },
-      child: SizedBox(
-        width: 50,
-        height: 10,
-        child: Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Hero(
-                  tag: team.nameTeam!,
-                  child: CachedNetworkImage(
-                    imageUrl: team.badge!,
-                    fit: BoxFit.contain,
-                    placeholder: (context, url) =>
-                        Center(child: _buildShimmerImage()),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: team.nameTeam == null
-                    ? _buildShimmerText()
-                    : Text(
-                        team.nameTeam!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
-                        ),
-                      ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerImage() {
-    return AppShimmer(
-        child: Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.white,
-    ));
-  }
-
-  Widget _buildShimmerCarousel() {
-    return AppShimmer(
-        child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        height: 150,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30), color: Colors.white),
-      ),
-    ));
-  }
-
-  Widget _buildShimmerText() {
-    return AppShimmer(
-        child: Container(width: 100, height: 16, color: Colors.white));
   }
 }

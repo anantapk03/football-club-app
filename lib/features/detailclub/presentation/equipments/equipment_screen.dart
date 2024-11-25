@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 
 import '../../../../components/widget/shimmer/list_club_shimmer.dart';
 import '../../model/equipment_item_model.dart';
@@ -46,7 +45,9 @@ class _EquipmentScreenState extends State<EquipmentScreen> {
       }
 
       if (equipmentState is EquipmentLoadSuccess) {
-        Logger().i("Hallo, kamu dieksekusi ga?");
+        if (equipmentState.listEquipment?.equipment == null) {
+          return _buildEmptyState();
+        }
         return _contentListEquipment(
             equipmentState.listEquipment?.equipment ?? []);
       }
@@ -75,6 +76,22 @@ class _EquipmentScreenState extends State<EquipmentScreen> {
           itemModel: item,
         );
       },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.error,
+          color: Colors.red,
+        ),
+        SizedBox(
+          height: 8.0,
+        ),
+        Text("Data Tidak Ditemukan")
+      ],
     );
   }
 }

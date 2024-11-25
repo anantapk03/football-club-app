@@ -120,7 +120,7 @@ class HistoryEventCard extends StatelessWidget {
     if (date == null) return null;
     try {
       DateTime parsedDate = DateFormat('yyyy-MM-dd').parse(date);
-      String formattedDate = DateFormat('d MMMM yyyy').format(parsedDate);
+      String formattedDate = DateFormat('d MMMM yyyy', 'id').format(parsedDate);
       return formattedDate;
     } catch (e) {
       return null;
