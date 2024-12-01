@@ -27,7 +27,7 @@ Future<void> _handleLocationPermission() async {
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       // Handle jika izin tetap ditolak atau ditolak secara permanen
-      print("Izin lokasi ditolak.");
+      Logger().e("Izin lokasi ditolak.");
       return;
     }
   }
@@ -36,7 +36,7 @@ Future<void> _handleLocationPermission() async {
       permission == LocationPermission.always) {
     // Izin telah diberikan, lakukan tindakan yang memerlukan lokasi di sini
 
-    print("Izin lokasi diberikan.");
+    Logger().i("Izin lokasi diberikan.");
   }
 }
 

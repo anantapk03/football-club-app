@@ -123,7 +123,7 @@ class ProfileScreen extends GetView<ProfileController> {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,10 +264,5 @@ class ProfileScreen extends GetView<ProfileController> {
       height: double.infinity,
       color: Colors.white,
     ));
-  }
-
-  Widget _buildShimmerText() {
-    return AppShimmer(
-        child: Container(width: 100, height: 16, color: Colors.white));
   }
 }

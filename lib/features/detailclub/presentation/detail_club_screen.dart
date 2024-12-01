@@ -91,34 +91,40 @@ class DetailClubScreen extends GetView<DetailClubController> {
           longitude: controller.longitude.value,
         ),
       ),
-      bottom: TabBar(
-        labelPadding: const EdgeInsets.all(0),
-        onTap: (int index) {
-          controller.onItemTapped(index);
-          controller.selectedItem.value = index;
-        },
-        indicatorColor: const Color(0xff5c0751),
-        dividerColor: Colors.transparent,
-        tabs: [
-          Obx(() {
-            return Tab(
-              height: 50,
-              child: _tab(
-                  active: controller.selectedItem.value == 0,
-                  text: AppLocalizations.of(context)?.aboutTeam ?? "About"),
-            );
-          }),
-          Obx(() {
-            return Tab(
-              height: 50,
-              child: _tab(
-                  active: controller.selectedItem.value == 1,
-                  text: AppLocalizations.of(context)?.historyJersey ??
-                      "History Jersey"),
-            );
-          }),
-        ],
-      ),
+      bottom: _tabBar(context),
+    );
+  }
+
+  PreferredSizeWidget _tabBar(
+    BuildContext context,
+  ) {
+    return TabBar(
+      labelPadding: const EdgeInsets.all(0),
+      onTap: (int index) {
+        controller.onItemTapped(index);
+        controller.selectedItem.value = index;
+      },
+      indicatorColor: const Color(0xff5c0751),
+      dividerColor: Colors.transparent,
+      tabs: [
+        Obx(() {
+          return Tab(
+            height: 50,
+            child: _tab(
+                active: controller.selectedItem.value == 0,
+                text: AppLocalizations.of(context)?.aboutTeam ?? "About"),
+          );
+        }),
+        Obx(() {
+          return Tab(
+            height: 50,
+            child: _tab(
+                active: controller.selectedItem.value == 1,
+                text: AppLocalizations.of(context)?.historyJersey ??
+                    "History Jersey"),
+          );
+        }),
+      ],
     );
   }
 

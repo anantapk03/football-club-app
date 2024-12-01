@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 import 'components/base/models/notification_model.dart';
 import 'components/config/app_const.dart';
@@ -17,7 +18,7 @@ void notificationHandlerAction(NotificationResponse notification) async {
         NotificationModel.fromJson(jsonDecode(notification.payload!));
     NotificationService().actionNotification(notificationPayload);
   } catch (e) {
-    print('Error parsing notification payload: $e');
+    Logger().e('Error parsing notification payload: $e');
   }
 }
 
@@ -37,7 +38,7 @@ class NotificationService {
       requestBadgePermission: true,
       requestSoundPermission: true,
       onDidReceiveLocalNotification: (id, title, body, payload) async {
-        print('Received local notification: $id, $title, $body, $payload');
+        Logger().i('Received local notification: $id, $title, $body, $payload');
       },
     );
 
@@ -64,7 +65,7 @@ class NotificationService {
         actionFirebaseTopic(notificationModel.topic.toString());
         break;
       default:
-        print("Unhandled norification type: ${notificationModel.type}");
+        Logger().e("Unhandled norification type: ${notificationModel.type}");
     }
   }
 
@@ -115,7 +116,7 @@ class NotificationService {
     String? body,
     String? payload,
   }) async {
-    print('Showing notification: $id, $title, $body, $payload');
+    Logger().i('Showing notification: $id, $title, $body, $payload');
     await notificationPlugin.show(
       id,
       title,

@@ -115,7 +115,7 @@ class DetailClubController extends GetxController {
         longitude.value = locations[0].longitude;
       }
     } catch (e) {
-      print('Error: $e');
+      Logger().i('Error: $e');
     }
   }
 

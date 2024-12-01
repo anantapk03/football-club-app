@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:uni_links/uni_links.dart';
 
 import '../../features/detailclub/presentation/detail_club_controller.dart';
@@ -21,7 +22,7 @@ class DeepLinkUtil {
         _processDeepLink(initialLink);
       }
     } catch (e) {
-      print("Gagal menangkap initial link : $e");
+      Logger().i("Gagal menangkap initial link : $e");
     }
   }
 
@@ -31,7 +32,7 @@ class DeepLinkUtil {
         _processDeepLink(uri.toString());
       }
     }, onError: (err) {
-      print("Gagal menangkap incoming link: $err");
+      Logger().e("Gagal menangkap incoming link: $err");
     });
   }
 
@@ -49,8 +50,6 @@ class DeepLinkUtil {
 
   void _handleDeepLinkToDetail(Uri uri) {
     final id = uri.pathSegments.last;
-    print('id : $id');
-    print("Current route : ${Get.currentRoute}");
     if (Get.currentRoute == AppRoute.detail) {
       DetailClubController controller = Get.find<DetailClubController>();
       controller.id.value = id;
@@ -80,7 +79,7 @@ class DeepLinkUtil {
         return null;
       }
     } catch (e) {
-      print("Gagal menangkap initial link : $e");
+      Logger().e("Gagal menangkap initial link : $e");
       return null;
     }
   }

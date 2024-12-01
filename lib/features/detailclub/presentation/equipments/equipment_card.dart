@@ -63,7 +63,7 @@ class EquipmentCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   itemModel?.strType ?? "1st",
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ),

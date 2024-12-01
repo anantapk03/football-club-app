@@ -45,7 +45,7 @@ class BottomnavigationScreen extends GetView<BottomNavigationController> {
               color: Colors.white,
               borderRadius: BorderRadius.only(
                   topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-              boxShadow: const <BoxShadow>[
+              boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Colors.grey,
                   blurRadius: 20,
@@ -123,9 +123,5 @@ class BottomnavigationScreen extends GetView<BottomNavigationController> {
         fontSize: 12,
       );
     }
-  }
-
-  _bottomNavigationBarItem(Icon icon, String label) {
-    return BottomNavigationBarItem(icon: icon, label: label);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 
 import '../../../../components/util/state.dart';
 import '../../repository/detailclub_repository.dart';
@@ -8,7 +7,6 @@ import 'equipment_state.dart';
 class EquipmentController extends GetxController {
   final DetailclubRepository _repository;
   EquipmentState equipmentState = EquipmentIdle();
-  final _logger = Logger();
   EquipmentController(this._repository);
 
   final id = "".obs;

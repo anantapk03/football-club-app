@@ -9,6 +9,7 @@ import '../../features/detailclub/presentation/detail_club_screen.dart';
 import '../../features/favorite/binding/favorite_binding.dart';
 import '../../features/favorite/presentation/favorite_screen.dart';
 import '../../features/navigation/binding/bottomnavigation_binding.dart';
+import '../../features/navigation/presentation/bottom_navigation_screen.dart';
 import '../../features/navigation/presentation/bottomnavigation_screen.dart';
 import '../../features/profile/binding/profile_binding.dart';
 import '../../features/profile/presentation/profile_screen.dart';
@@ -42,7 +43,7 @@ class AppRoute {
         binding: DetailClubBinding()),
     GetPage(
         name: home,
-        page: () => const BottomnavigationScreen(),
+        page: () => const BottomNavigationScreen(),
         binding: BottomnavigationBinding()),
     GetPage(
         name: favorite,

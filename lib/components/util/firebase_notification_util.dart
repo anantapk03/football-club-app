@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:logger/logger.dart';
 
 import '../../notification_services.dart';
 import '../base/models/notification_model.dart';
@@ -8,7 +9,7 @@ import '../base/models/notification_model.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Inisialisasi Firebase untuk background handler
-  print(
+  Logger().i(
       "Handling a background message: ${message.notification?.title} && ${message.data['id']}");
 }
 
@@ -25,8 +26,6 @@ class FirebaseNotificationUtil {
 
   void callListenerOnMessageForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("message data : ${message.data}");
-      // print("Messege receive on background : ${message.message}");
       if (message.notification != null) {
         callToShowNotif(message);
       }
@@ -45,14 +44,10 @@ class FirebaseNotificationUtil {
   }
 
   void subscribeTopic(String? idTeam) async {
-    await FirebaseMessaging.instance
-        .subscribeToTopic(idTeam ?? "")
-        .then((onValue) => print("Subscribe topic for id : $idTeam"));
+    await FirebaseMessaging.instance.subscribeToTopic(idTeam ?? "");
   }
 
   void unsubscribeTopic(String? idTeam) async {
-    await FirebaseMessaging.instance
-        .unsubscribeFromTopic(idTeam ?? "")
-        .then((onValue) => print("Unsubscribe Topic : $idTeam"));
+    await FirebaseMessaging.instance.unsubscribeFromTopic(idTeam ?? "");
   }
 }
