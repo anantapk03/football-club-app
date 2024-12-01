@@ -2,15 +2,12 @@
 
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
-// import '../../features/countries/binding/country_binding.dart';
-// import '../../features/countries/presentation/country_screen.dart';
 import '../../features/detailclub/binding/detail_club_binding.dart';
 import '../../features/detailclub/presentation/detail_club_screen.dart';
 import '../../features/favorite/binding/favorite_binding.dart';
 import '../../features/favorite/presentation/favorite_screen.dart';
 import '../../features/navigation/binding/bottomnavigation_binding.dart';
 import '../../features/navigation/presentation/bottom_navigation_screen.dart';
-import '../../features/navigation/presentation/bottomnavigation_screen.dart';
 import '../../features/profile/binding/profile_binding.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';

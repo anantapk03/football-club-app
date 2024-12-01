@@ -9,7 +9,7 @@ import 'components/config/app_const.dart';
 import 'components/config/app_route.dart';
 import 'features/detailclub/presentation/detail_club_controller.dart';
 import 'features/favorite/presentation/favorite_controller.dart';
-import 'features/navigation/presentation/bottomnavigation_controller.dart';
+import 'features/navigation/presentation/bottom_navigation_controller.dart';
 
 // Top Level
 void notificationHandlerAction(NotificationResponse notification) async {
@@ -101,11 +101,9 @@ class NotificationService {
   }
 
   void _updateBottomNavigationController() {
-    BottomNavigationController bottomNavigationController =
-        Get.find<BottomNavigationController>();
-    bottomNavigationController.currentIndex.value = 1;
-    bottomNavigationController
-        .changePage(bottomNavigationController.currentIndex.value);
+    BottomNavigationController2 bottomNavigationController =
+        Get.find<BottomNavigationController2>();
+    bottomNavigationController.onItemTapped(1);
     FavoriteController controller = Get.find<FavoriteController>();
     controller.loadAllClubFavorite();
   }

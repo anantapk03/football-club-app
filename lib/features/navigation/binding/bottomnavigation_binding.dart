@@ -11,13 +11,11 @@ import '../../teams/presentation/team_controller.dart';
 import '../../teams/repository/team_datasource.dart';
 import '../../teams/repository/team_repository.dart';
 import '../presentation/bottom_navigation_controller.dart';
-import '../presentation/bottomnavigation_controller.dart';
 
 class BottomnavigationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => FavoriteHelper());
-    Get.lazyPut(() => BottomNavigationController());
     Get.lazyPut(() => BottomNavigationController2());
     Get.lazyPut(() => TeamDatasource(Network.dioClient()));
     Get.lazyPut(() => TeamRepository(Get.find()));
