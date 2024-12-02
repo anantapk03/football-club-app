@@ -15,9 +15,8 @@ import 'components/config/app_route.dart';
 import 'components/config/app_style.dart';
 import 'components/services/app_service.dart';
 import 'components/services/database/app_database.dart';
-import 'components/util/deep_link_util.dart';
-import 'components/util/firebase_notification_util.dart';
 import 'components/util/storage_util.dart';
+import 'components/widget/localization_inherited_widget.dart';
 import 'firebase_options.dart';
 
 Future<void> _handleLocationPermission() async {
@@ -83,71 +82,65 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
-
-  static void setLocal(BuildContext context, Locale value) {
-    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-    state?.setState(() {
-      state._locale = value;
-    });
-  }
 }
 
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('id');
-  final _storage = StorageUtil(SecureStorage());
 
   @override
   void initState() {
-    _fetchLocale().then((locale) {
-      setState(() {
-        _locale = locale;
-      });
-    });
     super.initState();
-    FirebaseNotificationUtil().notificationService.initNotification();
-    FirebaseNotificationUtil().callListenerOnMessageForeground();
-    FirebaseNotificationUtil().callListenerOnMessageBackground();
-    DeepLinkUtil().initialDeepLinking();
+    _fetchLocale();
   }
 
-  Future<Locale> _fetchLocale() async {
-    var prefs = await _storage.getLanguage();
-
-    String languageCode = prefs?.split('-').firstOrNull ?? 'id';
-    return Locale(languageCode);
+  Future<void> _fetchLocale() async {
+    // Ambil data bahasa yang tersimpan (default ke 'id')
+    String? storedLanguageCode =
+        await StorageUtil(SecureStorage()).getLanguage();
+    if (storedLanguageCode != null) {
+      setState(() {
+        _locale = Locale(storedLanguageCode.split('-').first);
+      });
+    }
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    DeepLinkUtil().dispose();
+  void _updateLocale(Locale newLocale) {
+    setState(() {
+      _locale = newLocale;
+    });
+
+    // Simpan perubahan bahasa
+    StorageUtil(SecureStorage()).setLanguage(newLocale.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: AppConst.appName,
-      theme: ThemeData(
-        primarySwatch: AppStyle.appTheme,
-      ),
-      initialRoute: AppRoute.defaultRoute,
-      unknownRoute: GetPage(
-        name: AppRoute.notFound,
-        page: () => const UnknownRoutePage(),
-      ),
-      getPages: AppRoute.pages,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('en'), Locale('id')],
+    return LocalizationInheritedWidget(
       locale: _locale,
-      localeResolutionCallback: (_, __) {
-        return _locale;
-      },
+      updateLocale: _updateLocale,
+      child: GetMaterialApp(
+        title: AppConst.appName,
+        theme: ThemeData(
+          primarySwatch: AppStyle.appTheme,
+        ),
+        initialRoute: AppRoute.defaultRoute,
+        unknownRoute: GetPage(
+          name: AppRoute.notFound,
+          page: () => const UnknownRoutePage(),
+        ),
+        getPages: AppRoute.pages,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en'), Locale('id')],
+        locale: _locale,
+        localeResolutionCallback: (_, __) {
+          return _locale;
+        },
+      ),
     );
   }
 }

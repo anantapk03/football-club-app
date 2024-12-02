@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 import '../../../components/services/database/app_database.dart';
 import '../../../components/util/storage_util.dart';
-import '../../../main.dart';
+import '../../../components/widget/localization_inherited_widget.dart';
 import 'profile_state.dart';
 
 class ProfileController extends GetxController {
@@ -32,12 +32,11 @@ class ProfileController extends GetxController {
   }
 
   void saveLanguage(BuildContext context) {
+    final inheritedWidget = LocalizationInheritedWidget.of(context);
     if (isLang.value == 1) {
-      storageUtil.setLanguage("id-ID");
-      MyApp.setLocal(context, const Locale("id"));
+      inheritedWidget?.updateLocale(const Locale("id"));
     } else {
-      storageUtil.setLanguage("en-US");
-      MyApp.setLocal(context, const Locale("en"));
+      inheritedWidget?.updateLocale(const Locale("en"));
     }
   }
 
